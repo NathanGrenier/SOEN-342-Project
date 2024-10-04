@@ -1,2 +1,34 @@
 @startuml
+
+left to right direction
+
+actor Client as Cli
+actor Instructor as Inst
+actor Administrator as Ad
+
+rectangle System {
+usecase "View Offerings" as ViewOfferings
+usecase "Make Booking" as MakeBooking
+usecase "View Bookings" as ViewBookings
+usecase "Cancel Booking" as CancelBooking
+usecase "Register" as Register
+usecase "Take Offer" as TakeOffer
+usecase "Add Offering" as AddOffer
+usecase "Delete Account" as Delete
+usecase "Manage Bookings" as Manage
+}
+
+
+Cli --> MakeBooking
+Cli --> ViewBookings
+Cli --> CancelBooking
+Cli --> ViewOfferings
+
+Inst --> Register
+Inst --> TakeOffer
+
+Ad --> AddOffer
+Ad --> Delete
+Ad --> Manage
+
 @enduml
