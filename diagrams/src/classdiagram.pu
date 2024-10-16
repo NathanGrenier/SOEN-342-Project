@@ -1,0 +1,79 @@
+
+@startuml
+
+class User {
+    + name: String
+    + phone: String
+    + userID: Integer
+}
+class Location {
+    + name: String
+    + city: String
+    + address: String
+}
+
+class Schedule {
+    + week: String
+    + day: String
+    + addSlot(TimeSlot): void
+}
+
+class TimeSlot {
+    + startTime: Time
+    + endTime: Time
+    + isBooked: Boolean
+}
+
+class Lesson {
+    + type: String
+    + isGroup: Boolean
+    + duration: Time
+}
+
+class Instructor {
+    + specialization: String
+    + availableCities: List<String>
+    + addCity(String): void
+}
+
+class Offering {
+    + lesson: Lesson
+    + isPublic: Boolean
+}
+
+class Client {
+    + register(): void
+    + makeBooking(Offering): void
+    + cancelBooking(Booking): void
+}
+
+class Booking {
+    + date: Date
+    + isConfirmed: Boolean
+}
+
+class Admin {
+    + manageOfferings(): void
+    + deleteAccount(): void
+    + createOffering(): void
+}
+
+class Guardian {
+
+}
+
+Schedule *-- TimeSlot
+Offering "1" -- "1" Lesson : offers
+Offering "1" -- "1" Location : offered at
+Offering "1" -- "1" Schedule : scheduled at
+Offering "1" -- "1" Instructor : taught by
+Client "1" -- "*" Booking : makes
+Booking "1" -- "1" Offering : for
+Client "1" -- "0..1" Guardian : has
+User <|-- Guardian
+User <|-- Client
+User <|-- Instructor
+User <|-- Admin
+Admin "1" -- "0..*" Offering: manages
+
+@enduml
