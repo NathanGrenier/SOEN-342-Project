@@ -1,5 +1,6 @@
 
-@startuml
+@startuml {The name of the diagram}
+title Class Diagram for Lesson Management System
 
 class User {
     + name: String
@@ -37,7 +38,6 @@ class Instructor {
 }
 
 class Offering {
-    + lesson: Lesson
     + isPublic: Boolean
 }
 
@@ -63,10 +63,10 @@ class Guardian {
 }
 
 Schedule *-- TimeSlot
-Offering "1" -- "1" Lesson : offers
-Offering "1" -- "1" Location : offered at
+Offering "*" -- "1" Lesson : offers
+Offering "*" -- "1" Location : offered at
 Offering "1" -- "1" Schedule : scheduled at
-Offering "1" -- "1" Instructor : taught by
+Offering "*" -- "1" Instructor : taught by
 Client "1" -- "*" Booking : makes
 Booking "1" -- "1" Offering : for
 Client "1" -- "0..1" Guardian : has
