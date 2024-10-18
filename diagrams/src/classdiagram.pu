@@ -1,5 +1,6 @@
 
-@startuml
+@startuml {The name of the diagram}
+title Class Diagram for Lesson Management System
 
 class User {
     + name: String
