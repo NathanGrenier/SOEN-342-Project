@@ -9,6 +9,18 @@
 | Nathan Grenier  | 40250986  |
 | Nathanial Hwong | 40243583  |
 
+## Ranking Commit Importance
+
+A part of the project requirement is to rank the importance of our commits/issues. There are 4 levels of importance:
+- 3: Very Important
+- 2: Important
+- 1: Minor
+- 0: Unimportant
+
+When **committing** any change(s), evaluate the importance of them and prefix the commit message with the importance level (ex: `git commit -m "2: Added new function to handle get requests"`).
+
+When creating a **github issue**, make sure to use the template and appropriate importance label.
+
 ## Using plantUML
 
 In order to render ER diagrams (chen's notation), you must use the [server version](https://github.com/qjebbs/vscode-plantuml?tab=readme-ov-file#use-plantuml-server-as-render) of plantUML.
