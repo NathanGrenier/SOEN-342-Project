@@ -2,6 +2,8 @@
 
 ## Team Members
 
+**Class Section:** II
+
 | Name            | StudentID |
 | --------------- | --------- |
 | Nathan Grenier  | 40250986  |
