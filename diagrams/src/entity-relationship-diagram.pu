@@ -1,0 +1,62 @@
+@startuml
+title Lesson Scheduling System
+
+entity Lesson {
+    * lessonID : int
+    --
+    * lname : string
+    * ltype : string
+    * isPrivate : boolean
+}
+
+entity Offer {
+    * offerID : int
+    --
+    * status : string
+}
+
+entity Client {
+    * clientID : int
+    --
+    * cname : string
+}
+
+entity Instructor {
+    * instructorID : int
+    --
+    * iname : string
+    * phone : string
+    * availability : string
+    * specialization : string
+}
+
+entity Location {
+    * locationID : int
+    --
+    * lname : string
+}
+
+entity Schedule {
+    * scheduleID : int
+    --
+    * month : int
+    * year_ : int
+}
+
+entity TimeSlot {
+    * timeslotID : int
+    --
+    * day : int
+    * startTime : time
+    * endTime : time
+}
+
+' Relationships
+Lesson ||--o{ Offer : "OfferedAs"
+Offer }o--o| Client : "OfferedTo"
+Offer }o--|| Instructor : "GivenBy"
+Offer }o--|| Location : "TakesPlaceAt"
+Offer }o--|| Schedule : "During"
+Schedule }o--o{ TimeSlot : "SequenceOf"
+
+@enduml
