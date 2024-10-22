@@ -1,5 +1,4 @@
-@startuml
-title Sequence Diagram for Lesson Management System
+@startuml Lesson_Management_System_Sequence_Diagram_
 
 actor Admin
 actor Instructor

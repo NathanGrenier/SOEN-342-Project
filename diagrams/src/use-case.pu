@@ -1,5 +1,4 @@
-@startuml
-title Class Diagram for Lesson Management System
+@startuml Lesson_Management_System_Class_Diagram
 left to right direction
 
 actor Client as Cli
