@@ -1,5 +1,5 @@
 CREATE TABLE Instructor (
-    instructorID INTEGER PRIMARY KEY,
+    instructorID SERIAL PRIMARY KEY,
     iname VARCHAR(25),
     phone VARCHAR(15),
     availability VARCHAR(25),
@@ -7,32 +7,32 @@ CREATE TABLE Instructor (
 );
 
 CREATE TABLE Lesson (
-    lessonID INTEGER PRIMARY KEY,
+    lessonID SERIAL PRIMARY KEY,
     lename VARCHAR(25),
     ltype VARCHAR(25),
     isGroupLesson BOOLEAN
 );
 
 CREATE TABLE Location (
-    locationID INTEGER PRIMARY KEY,
+    locationID SERIAL PRIMARY KEY,
     loname VARCHAR(25)
 );
 
 CREATE TABLE TimeSlot (
-    timeslotID INTEGER PRIMARY KEY,
+    timeslotID SERIAL PRIMARY KEY,
     startTime TIME,
     endTime TIME,
     dayOfWeek VARCHAR(10)
 );
 
 CREATE TABLE Schedule (
-    scheduleID INTEGER PRIMARY KEY,
+    scheduleID SERIAL PRIMARY KEY,
     month VARCHAR(10),
     year_ INTEGER
 );
 
 CREATE TABLE SequenceOf (
-    relationID INTEGER PRIMARY KEY,
+    relationID SERIAL PRIMARY KEY,
     scheduleID INTEGER,
     timeslotID INTEGER,
     FOREIGN KEY (scheduleID) REFERENCES Schedule(scheduleID),
@@ -40,7 +40,7 @@ CREATE TABLE SequenceOf (
 );
 
 CREATE TABLE Offer (
-    offeringID INTEGER PRIMARY KEY,
+    offeringID SERIAL PRIMARY KEY,
     lessonID INTEGER,
     locationID INTEGER,
     scheduleID INTEGER,
@@ -53,12 +53,12 @@ CREATE TABLE Offer (
 );
 
 CREATE TABLE Client (
-    clientID INTEGER PRIMARY KEY,
+    clientID SERIAL PRIMARY KEY,
     cname VARCHAR(25)
 );
 
 CREATE TABLE OfferedTo (
-    relationID INTEGER PRIMARY KEY,
+    relationID SERIAL PRIMARY KEY,
     clientID INTEGER,
     offeringID INTEGER,
     FOREIGN KEY (clientID) REFERENCES Client(clientID),
