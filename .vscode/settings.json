@@ -1,8 +1,0 @@
-{
-  "plantuml.diagramsRoot": "diagrams/src",
-  "plantuml.exportOutDir": "diagrams/out",
-  "[plantuml]": {
-    "editor.defaultFormatter": "jebbs.plantuml",
-    "editor.formatOnSave": false
-  }
-}
