@@ -1,4 +1,4 @@
-package com.ngrenier.soen343;
+package com.ngrenier.soen342;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
