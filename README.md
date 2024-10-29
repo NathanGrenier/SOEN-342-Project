@@ -1,5 +1,7 @@
 # About
 
+[![Test](https://github.com/NathanGrenier/SOEN-342-Project/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/NathanGrenier/SOEN-342-Project/actions/workflows/test.yaml)
+
 ## Team Members
 
 **Class Section:** II
