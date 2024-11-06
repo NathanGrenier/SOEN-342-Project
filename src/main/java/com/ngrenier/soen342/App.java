@@ -29,5 +29,7 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Ui ui = new Ui();
+        ui.run();
     }
 }
