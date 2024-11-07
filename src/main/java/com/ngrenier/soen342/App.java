@@ -29,6 +29,7 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //initialize ui
         Ui ui = new Ui();
         ui.run();
     }

@@ -1,25 +1,25 @@
 package com.ngrenier.soen342;
+import java.util.List;
 import java.util.Scanner;
 
 public class Ui {
 
     private User user;
-    private Offerings offer;
+    private List<Offering> offerings;
     private Scanner scanner = new Scanner(System.in);
 
     public Ui() {
-        offer = new Offerings();
+        Offering.fetchOfferings();
+        User.fetchUsers();
     }
 
     public void displayMenu() {
         
         if (user == null) {
             System.out.println("\n=== Welcome to the Lesson Booking System ===");
-            System.out.println("1. Login as Client");
-            System.out.println("2. Login as Instructor");
-            System.out.println("3. Login as Administrator");
-            System.out.println("4. Register");
-            System.out.println("5. Exit");
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.println("3. Exit");
         } else if (user instanceof Client) {
             // Options for Clients
             System.out.println("\n=== Enter an integer to choose an option ===");
@@ -32,12 +32,13 @@ public class Ui {
             // Options for Instructors
             System.out.println("\n=== Enter an integer to choose an option ===");
             System.out.println("1. View Available Offerings to Take");
-            System.out.println("2. Logout");
+            System.out.println("2. View Accepted Offerings");
+            System.out.println("3. Logout");
         } else if (user instanceof Admin) {
             // Options for Admins
             System.out.println("\n=== Enter an integer to choose an option ===");
             System.out.println("1. View All Bookings");
-            System.out.println("2. Manage Offerings");
+            System.out.println("2. Edit Offerings");
             System.out.println("3. Delete User Account");
             System.out.println("4. Logout");
         }
@@ -56,18 +57,12 @@ public class Ui {
             if (user == null) {
                 switch (choice) {
                     case 1:
-                        loginClient();
+                        login();
                         break;
                     case 2:
-                        loginInstructor();
-                        break;
-                    case 3:
-                        loginAdmin();
-                        break;
-                    case 4:
                         user = register(user);
                         break;    
-                    case 5:
+                    case 3:
                         running = false;
                         System.out.println("Exiting system. Goodbye!");
                         break;
@@ -77,16 +72,16 @@ public class Ui {
             } else if (user instanceof Client) {
                 switch (choice) {
                     case 1:
-                        viewOfferings();
+                        user.viewOfferings();
                         break;
                     case 2:
-                        makeBooking();
+                        user.bookOffering();
                         break;
                     case 3:
-                        viewBookings();
+                        user.viewBookings();
                         break;
                     case 4:
-                        cancelBooking();
+                        user.cancelBooking();
                         break;
                     case 5:
                         logout();
@@ -97,7 +92,7 @@ public class Ui {
             } else if (user instanceof Instructor) {
                 switch (choice) {
                     case 1:
-                        viewAvailableOfferings();
+                        user.viewOfferings();
                         break;
                     case 2:
                         logout();
@@ -108,13 +103,13 @@ public class Ui {
             } else if (user instanceof Admin) {
                 switch (choice) {
                     case 1:
-                        viewAllBookings();
+                        user.viewOfferings();
                         break;
                     case 2:
-                        manageOfferings();
+                        user.editOffering();
                         break;
                     case 3:
-                        deleteUserAccount();
+                        user.deleteOffering();
                         break;
                     case 4:
                         logout();
@@ -128,19 +123,9 @@ public class Ui {
         scanner.close();
     }
 
-    private void loginClient() {
-        System.out.println("Loggin in as client...");
-        user = new Client();  // Assume this initializes a new Client
-    }
-
-    private void loginInstructor() {
-        System.out.println("Logging in as instructor...");
-        user = new Instructor();  // Assume this initializes a new Instructor
-    }
-
-    private void loginAdmin() {
-        System.out.println("Logging in as admin...");
-        user = new Admin();  // Assume this initializes an Admin after validation
+    private void login() {
+        System.out.println("Logging in as client...");
+        user = new User();
     }
     private User register(User user) {
         System.out.println("\n=== Choose what type of account ===");
@@ -156,38 +141,23 @@ public class Ui {
         switch (type){
             case 1:
                 user = new Client();
+                //add to array of clients (to implement)
+                //add to DB (to implement)
                 break;
             case 2:
-            user = new Instructor();
+                user = new Instructor();
+                //add to array of clients (to implement)
+                //add to DB (to implement)
                 break;
             case 3:
-                user = new Admin
-                ();
+                user = new Admin();
+                //add to array of clients (to implement)
+                //add to DB (to implement)
                 break;
             default:
             System.out.println("Invalid choice, please try again.");
         }
         return user;
-    }
-
-    private void viewOfferings() {
-        System.out.println("Viewing available offerings...");
-    }
-
-    private void makeBooking() {
-        System.out.println("Making a new booking...");
-    }
-
-    private void viewBookings() {
-        System.out.println("Viewing your bookings...");
-    }
-
-    private void cancelBooking() {
-        System.out.println("Cancelling a booking...");
-    }
-
-    private void viewAvailableOfferings() {
-        System.out.println("Viewing offerings available to take as an instructor...");
     }
 
     private void viewAllBookings() {
