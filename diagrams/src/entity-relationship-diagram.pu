@@ -1,5 +1,10 @@
-@startuml
+@startuml ERD for Database
 title Lesson Scheduling System
+
+skinparam linetype ortho
+
+!define PK <&key>
+!define FK <&link-intact>
 
 entity Lesson {
     * lessonID : int

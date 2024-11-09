@@ -1,0 +1,10 @@
+@startuml Domain Model
+hide empty members
+
+class Terminal {}
+class App {}
+class Organization {}
+class Admin {}
+class Instructor {}
+class Client {}
+@enduml
