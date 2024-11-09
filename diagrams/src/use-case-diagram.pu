@@ -1,4 +1,4 @@
-@startuml Lesson_Management_System_Class_Diagram
+@startuml Use Case Diagram
 left to right direction
 
 actor Client as Cli

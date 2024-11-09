@@ -6,18 +6,18 @@
 
 **Class Section:** II
 
-| Name            | StudentID |
-| --------------- | --------- |
-| Nathan Grenier  | 40250986  |
-| Nathanial Hwong | 40243583  |
+| Name            | StudentID | Email                      |
+| --------------- | --------- | -------------------------- |
+| Nathan Grenier  | 40250986  | nathangrenier01@gmail.com  |
+| Nathanial Hwong | 40243583  | nathanial.hwong8@gmail.com |
 
 ## Ranking Commit Importance
 
 A part of the project requirement is to rank the importance of our commits/issues. There are 4 levels of importance:
-- 3: Very Important
-- 2: Important
-- 1: Minor
-- 0: Unimportant
+- 3: Very Important (ex: adding a class)
+- 2: Important (ex: adding new functions into classes)
+- 1: Minor (ex: changing the names of functions or variables)
+- 0: Unimportant (ex: comments)
 
 When **committing** any change(s), evaluate the importance of them and prefix the commit message with the importance level (ex: `git commit -m "2: Added new function to handle get requests"`).
 
