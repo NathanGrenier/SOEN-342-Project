@@ -1,3 +1,15 @@
 Question: "Offerings are unique.  In other words, multiple offerings on the same day and time slot must be offered at a different location."
 
-context <Class Name>:
+context Offering:
+inv: not self.offeringrecords.offering -> exists (o:Offering |
+        o.id <> self.id 
+        and (
+        (o.schedule.startDate <= self.schedule.endDate and o.schedule.endDate >= self.schedule.startDate)
+        or 
+        o.schedule.timeSlot.day = self.schedule.timeSlot.day
+        or
+        (o.schedule.timeSlot.startTime = self.schedule.timeSlot.startTime and
+        o.schedule.timeSlot.endTime = self.schedule.timeSlot.endTime) 
+        or 
+        o.location <> self.location
+        )

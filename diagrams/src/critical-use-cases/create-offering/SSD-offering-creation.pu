@@ -1,0 +1,14 @@
+@startuml 
+title System Sequence Diagram: Offering Creation
+
+actor Admin
+participant System
+
+Admin -> System: newOffering(Location, TimeSlot[], Lesson)
+System -> System: validateOffering(Location, Schedule, Lesson)
+alt Success
+    System --> Admin: Confirmation message
+else Failure
+    System --> Admin: Error message
+end
+@enduml
