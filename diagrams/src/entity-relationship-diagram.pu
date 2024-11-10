@@ -6,62 +6,122 @@ skinparam linetype ortho
 !define PK <&key>
 !define FK <&link-intact>
 
-entity Lesson {
-    * lessonID : int
+entity City {
+    PK CI_ID: int
     --
-    * lname : string
-    * ltype : string
-    * isPrivate : boolean
+    CI_NAME: string
+    CI_PROVINCE: string 
 }
 
-entity Offer {
-    * offerID : int
+entity LocationType {
+    PK LT_ID: int
     --
-    * status : string
-}
-
-entity Client {
-    * clientID : int
-    --
-    * cname : string
-}
-
-entity Instructor {
-    * instructorID : int
-    --
-    * iname : string
-    * phone : string
-    * availability : string
-    * specialization : string
+    LT_NAME: string
 }
 
 entity Location {
-    * locationID : int
+    PK L_ID: int
     --
-    * lname : string
+    L_FACILITY: string
+    L_ROOM_NAME: string
+    FK LT_ID: int
+    FK CI_ID: int
+}
+
+entity Admin {
+    PK A_ID: int
+    --
+    A_NAME: string
+    A_USERNAME: string
+    A_PASSWORD: string
+}
+entity Client {
+    PK C_ID: int
+    --
+    C_NAME: string
+    C_USERNAME: string
+    C_PASSWORD: string
+    C_AGE: int
+    FK GUARDIAN_ID: int
+}
+
+entity Instructor {
+    PK I_ID: int
+    --
+    I_NAME: string
+    I_USERNAME: string
+    I_PASSWORD: string
+    I_PHONE: string
+}
+entity InstructorCity{
+    PK FK I_ID: int
+    PK FK CI_ID: int
+}
+
+entity Specialization {
+    PK S_ID: int
+    --
+    S_NAME: string
+}
+entity InstructorSpecialization {
+    PK FK I_ID: int
+    PK FK S_ID: int
 }
 
 entity Schedule {
-    * scheduleID : int
+    PK SC_ID: int
     --
-    * month : int
-    * year_ : int
+    SC_START_DATE: Date
+    SC_END_DATE: Date
+}
+entity TimeSlot {
+    PK TS_ID: int
+    --
+    TS_DAY: DAY_OF_WEEK
+    TS_START_TIME: Timestamp
+    TS_END_TIME: Timestamp
+    FK SC_ID: int
 }
 
-entity TimeSlot {
-    * timeslotID : int
+entity Offering {
+    PK O_ID: int
     --
-    * day : int
-    * startTime : time
-    * endTime : time
+    O_LESSON: string
+    O_MAX_CAPACITY: int
+    O_CURRENT_CAPACITY: int
+    O_IS_PRIVATE: boolean
+    FK I_ID: int
+    FK L_ID: int
+    FK SC_ID: int
+}
+
+entity Booking {
+    PK FK C_ID: int
+    PK FK O_ID: int
 }
 
 ' Relationships
-Lesson ||--o{ Offer : "OfferedAs"
-Offer }o--o| Client : "OfferedTo"
-Offer }o--|| Instructor : "GivenBy"
-Offer }o--|| Location : "TakesPlaceAt"
-Offer }o--|| Schedule : "During"
-Schedule }o--o{ TimeSlot : "SequenceOf"
+Location ||--|| LocationType
 
+Offering }o-up-|| Instructor
+Offering ||--|{ Booking
+Offering }o-|| Location
+Offering ||--|| Schedule
+
+Booking }|--|| Client
+
+City ||-o{ Location
+City ||-|{ InstructorCity
+
+Schedule ||--|{ TimeSlot
+
+Instructor ||-right-|{ InstructorCity
+Instructor ||-left-|{ InstructorSpecialization
+
+InstructorSpecialization }|--|| Specialization
+
+' Position Admin
+Location ||-|| Empty
+Empty -- Admin
+hide Empty
 @enduml

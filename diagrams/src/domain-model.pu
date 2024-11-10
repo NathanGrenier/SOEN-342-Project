@@ -1,10 +1,95 @@
 @startuml Domain Model
-hide empty members
+title Domain Model
 
-class Terminal {}
-class App {}
-class Organization {}
-class Admin {}
-class Instructor {}
-class Client {}
+hide empty members
+skinparam linetype ortho
+
+package Main {
+    class Terminal {}
+    class App {}
+
+    class UserRecords {}
+    abstract User {
+        name
+        userName
+        password
+    }
+    class Client {
+        age
+    }
+    class Specialization {
+        name
+    }
+    class Instructor {
+        phoneNumber
+    }
+    class Admin {}
+
+    class OfferingRecords {}
+    class Offering {
+        lesson
+        maxCapacity
+        /currentCapacity
+        /isPrivate
+    }
+
+    class City {
+        name
+        province
+    }
+    class Location {
+        facility
+        roomName
+        type
+    }
+
+    class Schedule {
+        startDate
+        endDate
+    }
+    class TimeSlot {
+        day
+        startTime
+        endTime
+    }
+
+    class BookingRecords {}
+    class Booking {}
+
+    Terminal - App
+    App -- User
+    App -- OfferingRecords
+    ' Terminal -up- User 
+    ' Terminal -left- App 
+    ' User -up- Terminal
+
+    User <|-- Client
+    User <|-- Instructor
+    User <|-- Admin
+
+    UserRecords *- User 
+
+    Location "*" -up-> "1" City: in
+
+    Schedule *- TimeSlot: has
+
+    Offering --* OfferingRecords
+    Offering "1" - "1" Schedule: at
+    Offering "1" -- "1" Location: in
+
+    Instructor "1" -- "*" Specialization: specializesIn
+    Instructor "1" -- "*" City: availableIn
+    Instructor "0..1" -- "*" Offering: taughtBy
+
+    Client "*" - "*" Offering
+    Client "0..1" -- "1" Client: guardianOf
+
+    (Client, Offering) -- Booking
+    Booking -left-* BookingRecords
+
+
+    Admin -up- UserRecords: manages
+    Admin -- BookingRecords: manages
+    Admin -- OfferingRecords: manages
+}
 @enduml

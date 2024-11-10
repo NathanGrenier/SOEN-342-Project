@@ -1,33 +1,42 @@
 @startuml Use Case Diagram
 left to right direction
+' skinparam linetype ortho
 
-actor Client as Cli
-actor Instructor as Inst
-actor Administrator as Ad
+
+actor Public
+actor Client
+actor Instructor
+actor Admin
 
 rectangle System {
-usecase "View Offerings" as ViewOfferings
-usecase "Make Booking" as MakeBooking
-usecase "View Bookings" as ViewBookings
-usecase "Cancel Booking" as CancelBooking
-usecase "Register" as Register
-usecase "Take Offer" as TakeOffer
-usecase "Add Offering" as AddOffer
-usecase "Delete Account" as Delete
-usecase "Manage Bookings" as Manage
+    usecase "Register" as Register
+    usecase "Take Offer" as TakeOffer
+    usecase "View Offerings" as ViewOfferings
+    usecase "Login" as Login
+    usecase "Create Booking" as CreateBooking
+    usecase "Cancel Booking" as CancelBooking
+    usecase "View Bookings" as ViewBookings
+    usecase "Cancel Booking" as CancelBooking
+    usecase "Delete Account" as DeleteAccount
+    usecase "Create Offering" as CreateOffer
 }
 
+ViewOfferings <-- Public
+Register <-- Public
 
-Cli --> MakeBooking
-Cli --> ViewBookings
-Cli --> CancelBooking
-Cli --> ViewOfferings
+Client --> Login
+Client --> ViewOfferings
+Client --> CreateBooking
+Client --> ViewBookings
+Client --> CancelBooking
 
-Inst --> Register
-Inst --> TakeOffer
+Instructor --> Login
+Instructor --> TakeOffer
 
-Ad --> AddOffer
-Ad --> Delete
-Ad --> Manage
+Admin --> Login
+Admin --> CreateOffer
+Admin --> DeleteAccount
+Admin --> ViewBookings
+Admin --> CancelBooking
 
 @enduml
