@@ -3,7 +3,8 @@ INSERT INTO
 VALUES
     ('Toronto', 'Ontario'),
     ('Vancouver', 'British Columbia'),
-    ('Montreal', 'Quebec') ('Quebec City', 'Quebec');
+    ('Montreal', 'Quebec'),
+    ('Quebec City', 'Quebec');
 
 INSERT INTO
     Location_Type (LT_NAME)
@@ -20,8 +21,8 @@ VALUES
     ('YMCA', 'Room 3', 1, 3),
     ('YMCA', 'Gym 1', 2, 3),
     ('YMCA', 'Gym 2', 2, 3),
-    ("Boy's and Girl's Club", 'Gym 1', 2, 1),
-    ("Boy's and Girl's Club", 'Room L2', 1, 1),
+    ('Boy''s and Girl''s Club', 'Gym 1', 2, 1),
+    ('Boy''s and Girl''s Club', 'Room L2', 1, 1),
     ('Aqua Park', 'Beginner Pool', 3, 1),
     ('Aqua Park', 'Beginner Pool', 3, 3),
     ('Aqua Park', 'Deep End', 3, 3);
@@ -64,7 +65,7 @@ VALUES
     (1, 1),
     (2, 1),
     (2, 2),
-    (2, 3);
+    (2, 3),
     (3, 3);
 
 INSERT INTO
@@ -83,8 +84,8 @@ VALUES
     (1, 3),
     (2, 2),
     (2, 4),
-    (2, 5);
-    (3, 2);
+    (2, 5),
+    (3, 2),
     (3, 5);
 
 INSERT INTO
@@ -92,7 +93,7 @@ INSERT INTO
 VALUES
     ('2024-12-01', '2024-12-10'),
     ('2024-11-04', '2024-12-2'),
-    ('2025-01-01', '2024-01-31');
+    ('2025-01-01', '2025-01-31');
 
 INSERT INTO
     Time_Slot (TS_DAY, TS_START_TIME, TS_END_TIME, SC_ID)
@@ -113,11 +114,11 @@ VALUES
 INSERT INTO
     Offering (O_LESSON, O_MAX_CAPACITY, I_ID, L_ID, SC_ID)
 VALUES
-    ("Swimming Lessons", 10, 1, 8, 1),
-    ("Swimming Lessons", 1, 1, 8, 1),
-    ("Yoga Lessons", 1, 2, 3, 2),
-    ("Yoga Lessons", 5, 3, 1, 2),
-    ("Weightlifting Class", 3, 1, 6, 3);
+    ('Swimming Lessons', 10, 1, 8, 1),
+    ('Swimming Lessons', 1, 1, 8, 1),
+    ('Yoga Lessons', 1, 2, 3, 2),
+    ('Yoga Lessons', 5, 3, 1, 2),
+    ('Weightlifting Class', 3, 1, 6, 3);
 
 INSERT INTO
     Booking (C_ID, O_ID)
