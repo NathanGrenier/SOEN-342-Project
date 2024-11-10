@@ -1,0 +1,12 @@
+# Teacher's Updates
+## 8 Nov:
+- An organization (through an administrator) would create a lesson. This is not made public yet as it does not (upon its construction) have an instructor.
+- Once an instructor takes on this lesson, we refer to this as creating an offering, which implies that the lesson is now published to the world. This offering creation is, in my assessment, a **critical** requirement as it entails some level of complexity, and thus risk.
+- A registered client can login into the system and sign up for an offering. This process is referred to as creating a booking. The creation of a booking is a **critical** requirement, as is also entails some complexity.
+- In the set of slides Building the big picture of requirements analysis and design I go over all steps for critical requirements, arguing that critical use cases require a detailed specification. However, in the case of non-critical use cases (as it would be the case with the rest of the use cases in the project), we can skip several steps. For example, there is hardly any complexity in viewing offerings. Of course, nothing prevents you from treating any use case as critical and provide a detailed specification, but my suggestion is to not do that as it would make the process unnecessarily heavy. Please have in mind three things:
+  - Feel free to treat a use case as critical whenever you judge that it contains some significant degree of complexity and thus a detailed specification would help you.
+  - Non-critical requirements does not imply non-important, and
+  - Even in the case of non-critical uses cases, we would need to make sure we update the domain model before we move on to design.
+
+- Given a critical use case: We need to create an SSD for its success as well one SSD for its failure scenario. If not too complex, then both success and failure scenarios can be captured by the same SSD (and consequently by the same interaction diagram during design). I normally would avoid doing that, and I prefer to separate scenarios. However, this is your choice.
+- re: Cancellations: Even though the project description mentions this, it is left up to you to implement such policy(-ies) as you see fit. For example, it would make sense to cancel a lesson if it has no instructor, but how you would cancel an offering is left to your judgment. For example, you may decide to cancel an offering only if there are no clients, or unconditionally (i.e. even in the presence of clients).
