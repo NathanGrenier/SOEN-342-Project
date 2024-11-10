@@ -1,7 +1,7 @@
 package com.ngrenier.soen342;
 
 public class Client extends User {
-    public Client(){
+    public Client(String name, String pass){
         
     }
     //displays offers the user has accepted

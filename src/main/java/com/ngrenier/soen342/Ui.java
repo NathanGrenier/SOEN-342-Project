@@ -42,7 +42,6 @@ public class Ui {
             System.out.println("3. Delete User Account");
             System.out.println("4. Logout");
         }
-        
         System.out.print("Enter your choice: ");
     }
 
@@ -140,17 +139,17 @@ public class Ui {
         String pass = scanner.nextLine();
         switch (type){
             case 1:
-                user = new Client();
+                user = new Client(name,pass);
                 //add to array of clients (to implement)
                 //add to DB (to implement)
                 break;
             case 2:
-                user = new Instructor();
+                user = new Instructor(name,pass);
                 //add to array of clients (to implement)
                 //add to DB (to implement)
                 break;
             case 3:
-                user = new Admin();
+                user = new Admin(name,pass);
                 //add to array of clients (to implement)
                 //add to DB (to implement)
                 break;
@@ -159,19 +158,6 @@ public class Ui {
         }
         return user;
     }
-
-    private void viewAllBookings() {
-        System.out.println("Viewing all bookings as Admin...");
-    }
-
-    private void manageOfferings() {
-        System.out.println("Managing offerings...");
-    }
-
-    private void deleteUserAccount() {
-        System.out.println("Deleting a user account...");
-    }
-
     private void logout() {
         System.out.println("Logging out...");
         user = null;

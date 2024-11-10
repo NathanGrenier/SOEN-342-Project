@@ -1,7 +1,7 @@
 package com.ngrenier.soen342;
 
 public class Instructor extends User{
-    public Instructor(){
+    public Instructor(String name, String pass){
         
     }
     //display bookings that instructor is associate to (giving that class)
