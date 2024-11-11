@@ -7,6 +7,7 @@ skinparam linetype ortho
 package Main {
     class Terminal {}
     class App {}
+    class AuthenticationService {}
 
     class UserRecords {}
     abstract User {
@@ -56,12 +57,11 @@ package Main {
     class BookingRecords {}
     class Booking {}
 
-    Terminal - App
-    App -- User
+    App - Terminal
+    App -- AuthenticationService
+    App -- UserRecords
     App -- OfferingRecords
-    ' Terminal -up- User 
-    ' Terminal -left- App 
-    ' User -up- Terminal
+    App -- BookingRecords
 
     User <|-- Client
     User <|-- Instructor
@@ -86,10 +86,5 @@ package Main {
 
     (Client, Offering) -- Booking
     Booking -left-* BookingRecords
-
-
-    Admin -up- UserRecords: manages
-    Admin -- BookingRecords: manages
-    Admin -- OfferingRecords: manages
 }
 @enduml
