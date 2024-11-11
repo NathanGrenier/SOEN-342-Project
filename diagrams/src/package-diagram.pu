@@ -1,3 +1,19 @@
 @startuml Package Diagram
+hide empty members
+skinparam linetype ortho
 
+package System {
+    package Main {}
+    
+    package Config {
+        class DatabaseConfig {}
+    }
+
+    package Services {
+        class AuthenticationService {}
+    }
+}
+
+Main ..> Config
+Main .> Services
 @enduml

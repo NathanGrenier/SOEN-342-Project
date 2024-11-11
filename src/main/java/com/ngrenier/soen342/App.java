@@ -15,21 +15,14 @@ public class App {
             try (Connection conn = DatabaseConfig.getConnection(); Statement stmt = conn.createStatement()) {
                 ResultSet rs = stmt.executeQuery("SELECT version()");
                 if (rs.next()) {
-                    System.out.println("Connected to PostgreSQL: " + rs.getString(1));
+                    System.out.println("\nConnected to PostgreSQL: " + rs.getString(1));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try (Connection conn = DatabaseConfig.getConnection(); Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT * FROM users");
-            while (rs.next()) {
-                System.out.println("User ID: " + rs.getInt("id") + ", Username: " + rs.getString("username"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Ui ui = new Ui();
-        ui.run();
+
+        // Ui ui = new Ui();
+        // ui.run();
     }
 }

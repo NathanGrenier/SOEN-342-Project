@@ -1,0 +1,10 @@
+ALTER SEQUENCE admin_a_id_seq RESTART WITH 1;
+ALTER SEQUENCE city_ci_id_seq RESTART WITH 1;
+ALTER SEQUENCE client_c_id_seq RESTART WITH 1;
+ALTER SEQUENCE instructor_i_id_seq RESTART WITH 1;
+ALTER SEQUENCE location_l_id_seq RESTART WITH 1;
+ALTER SEQUENCE location_type_lt_id_seq RESTART WITH 1;
+ALTER SEQUENCE offering_o_id_seq RESTART WITH 1;
+ALTER SEQUENCE schedule_sc_id_seq RESTART WITH 1;
+ALTER SEQUENCE specialization_s_id_seq RESTART WITH 1;
+ALTER SEQUENCE time_slot_ts_id_seq RESTART WITH 1;
