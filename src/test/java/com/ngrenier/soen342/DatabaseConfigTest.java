@@ -40,7 +40,7 @@ public class DatabaseConfigTest {
     public void testFlywayMigrations() throws SQLException {
         // Verify that the "users" table exists and contains data
         try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users");
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM admin");
             assertTrue(rs.next(), "Result set should have at least one row");
             int count = rs.getInt(1);
             assertTrue(count > 0, "Users table should contain at least one row");

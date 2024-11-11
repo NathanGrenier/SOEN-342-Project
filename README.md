@@ -128,6 +128,8 @@ Both the Postgres instance and database management tool (pgAdmin) are configured
 In order to render ER diagrams (chen's notation), you must use the [server version](https://github.com/qjebbs/vscode-plantuml?tab=readme-ov-file#use-plantuml-server-as-render) of plantUML.
 
 ### Setup
+Install the plantuml VsCode extension.
+
 To pull the docker image, run:
 ```bash
 docker run -d -p 8181:8080 --name plantuml -e BASE_URL=plantuml plantuml/plantuml-server:jetty

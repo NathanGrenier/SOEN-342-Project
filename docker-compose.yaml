@@ -23,6 +23,8 @@ services:
       - 5050:80
     volumes:
       - pgadmin:/var/lib/pgadmin
+    logging:
+      driver: "none"
 
 volumes:
   db-data:
