@@ -7,7 +7,9 @@ skinparam linetype ortho
 package Main {
     class Terminal {}
     class App {}
-    class AuthenticationService {}
+    class Services::AuthenticationService {}
+    class Config::DatabaseConfig {}
+
 
     class UserRecords {}
     abstract User {
@@ -57,8 +59,9 @@ package Main {
     class BookingRecords {}
     class Booking {}
 
-    App - Terminal
-    App -- AuthenticationService
+    App "1" -up- "1" Terminal
+    App "1" -up- "1" Services::AuthenticationService
+    App "1" - "1" Config::DatabaseConfig: initializes
     App -- UserRecords
     App -- OfferingRecords
     App -- BookingRecords
