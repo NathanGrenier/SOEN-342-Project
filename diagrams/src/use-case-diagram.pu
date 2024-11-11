@@ -38,5 +38,4 @@ Admin --> CreateOffer
 Admin --> DeleteAccount
 Admin --> ViewBookings
 Admin --> CancelBooking
-
 @enduml

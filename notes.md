@@ -1,9 +1,9 @@
 # TODO
-- [ ] UML Use Case Diagram
+- [x] UML Use Case Diagram
 - [x] UML Domain Model
 - [ ] UML Class diagram
 - [x] Relational data model
-- [ ] Package Diagram
+- [x] Package Diagram
 - [ ] 5 min video demonstrating entire system functionality.
 ## Critical Use Cases
 Given a critical use case, we need to create these artifacts for **BOTH** the success and failure scenarios: 
@@ -54,7 +54,7 @@ A registered client can login into the system and sign up for an offering.
    - (for simplicity we consider only identical day and time slots, even though in reality a booking on Monday 3pm – 4pm and another also on Monday 3:30pm – 4:30pm should not be acceptable.) 
 
 # Miscellaneous
-**Cancellations:** It is left up to you to implement such policy(-ies) as you see fit. For example, it would make sense to cancel a lesson if it has no isntructor, but how you would cancel an offering is left to your judgment. For example, you may decide to cancel an offering only if there are no clients, or unconditionally (i.e. even in the presence of clients).
+**Cancellations:** It is left up to you to implement such policy(-ies) as you see fit. For example, it would make sense to cancel a lesson if it has no instructor, but how you would cancel an offering is left to your judgment. For example, you may decide to cancel an offering only if there are no clients, or unconditionally (i.e. even in the presence of clients).
 
 # Division of Labor
 ## Together
