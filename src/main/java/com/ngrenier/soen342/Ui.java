@@ -1,18 +1,24 @@
 package com.ngrenier.soen342;
+
 import java.util.Scanner;
+
+import com.ngrenier.soen342.users.User;
+import com.ngrenier.soen342.users.Admin;
+import com.ngrenier.soen342.users.Client;
+import com.ngrenier.soen342.users.Instructor;
 
 public class Ui {
 
     private User user;
-    private Offerings offer;
+    private Offering offer;
     private Scanner scanner = new Scanner(System.in);
 
     public Ui() {
-        offer = new Offerings();
+        // offer = new Offering();
     }
 
     public void displayMenu() {
-        
+
         if (user == null) {
             System.out.println("\n=== Welcome to the Lesson Booking System ===");
             System.out.println("1. Login as Client");
@@ -41,13 +47,13 @@ public class Ui {
             System.out.println("3. Delete User Account");
             System.out.println("4. Logout");
         }
-        
+
         System.out.print("Enter your choice: ");
     }
 
     public void run() {
         boolean running = true;
-        
+
         while (running) {
             displayMenu();
             int choice = scanner.nextInt();
@@ -66,7 +72,7 @@ public class Ui {
                         break;
                     case 4:
                         user = register(user);
-                        break;    
+                        break;
                     case 5:
                         running = false;
                         System.out.println("Exiting system. Goodbye!");
@@ -124,24 +130,25 @@ public class Ui {
                 }
             }
         }
-        
+
         scanner.close();
     }
 
     private void loginClient() {
         System.out.println("Loggin in as client...");
-        user = new Client();  // Assume this initializes a new Client
+        // user = new Client(); // Assume this initializes a new Client
     }
 
     private void loginInstructor() {
         System.out.println("Logging in as instructor...");
-        user = new Instructor();  // Assume this initializes a new Instructor
+        // user = new Instructor(); // Assume this initializes a new Instructor
     }
 
     private void loginAdmin() {
         System.out.println("Logging in as admin...");
-        user = new Admin();  // Assume this initializes an Admin after validation
+        // user = new Admin(); // Assume this initializes an Admin after validation
     }
+
     private User register(User user) {
         System.out.println("\n=== Choose what type of account ===");
         System.out.println("1. Client");
@@ -153,19 +160,18 @@ public class Ui {
         String name = scanner.nextLine();
         System.out.print("Please enter a password:");
         String pass = scanner.nextLine();
-        switch (type){
+        switch (type) {
             case 1:
-                user = new Client();
+                // user = new Client();
                 break;
             case 2:
-            user = new Instructor();
+                // user = new Instructor();
                 break;
             case 3:
-                user = new Admin
-                ();
+                // user = new Admin();
                 break;
             default:
-            System.out.println("Invalid choice, please try again.");
+                System.out.println("Invalid choice, please try again.");
         }
         return user;
     }

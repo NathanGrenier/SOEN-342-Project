@@ -7,13 +7,47 @@ package System {
     
     package Config {
         class DatabaseConfig {}
+        class App as "Main::App"
+
+        DatabaseConfig <- App
     }
 
     package Services {
         class AuthenticationService {}
+        class App as "Main::App"
+        
+        AuthenticationService <- App
+    }
+
+    package Users {
+        abstract User {
+            name
+            userName
+            password
+        }
+        class Client {
+            age
+        }
+        class Specialization {
+            name
+        }
+        class Instructor {
+            phoneNumber
+        }
+        class Admin {}
+        
+        User <|-- Client
+        User <|-- Instructor
+        User <|-- Admin
+        UserRecords *- User 
+
+        Client "0..1" -- "1" Client: guardianOf
+
+        Instructor "1" -- "*" Specialization: specializesIn
     }
 }
 
-Main ..> Config
-Main .> Services
+Main .left.> Config
+Main .up.> Services
+Main .down.> Users
 @enduml
