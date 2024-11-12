@@ -14,7 +14,7 @@ public class Ui {
     private Scanner scanner = new Scanner(System.in);
 
     public Ui() {
-        offer = new Offering();
+        // offer = new Offering();
     }
 
     public void displayMenu() {
@@ -136,17 +136,17 @@ public class Ui {
 
     private void loginClient() {
         System.out.println("Loggin in as client...");
-        user = new Client(); // Assume this initializes a new Client
+        // user = new Client(); // Assume this initializes a new Client
     }
 
     private void loginInstructor() {
         System.out.println("Logging in as instructor...");
-        user = new Instructor(); // Assume this initializes a new Instructor
+        // user = new Instructor(); // Assume this initializes a new Instructor
     }
 
     private void loginAdmin() {
         System.out.println("Logging in as admin...");
-        user = new Admin(); // Assume this initializes an Admin after validation
+        // user = new Admin(); // Assume this initializes an Admin after validation
     }
 
     private User register(User user) {
@@ -162,13 +162,13 @@ public class Ui {
         String pass = scanner.nextLine();
         switch (type) {
             case 1:
-                user = new Client();
+                // user = new Client();
                 break;
             case 2:
-                user = new Instructor();
+                // user = new Instructor();
                 break;
             case 3:
-                user = new Admin();
+                // user = new Admin();
                 break;
             default:
                 System.out.println("Invalid choice, please try again.");
