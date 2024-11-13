@@ -55,13 +55,17 @@ public class Terminal {
                         }
                         break;
                     case 3:
+                        input[1] = "view";
+                        app.processInput(input);
+                        break;
+                    case 4:
                         running = false;
                         System.out.println("Exiting system. Goodbye!");
                         break;
                     default:
                         System.out.println("Invalid choice, please try again.");
                 }
-            } else if (input[0].equals("Client")) {
+            } else if (input[0].equals("1")) {
                 switch (choice) {
                     case 1:
                         input[1] = "view";
@@ -89,7 +93,7 @@ public class Terminal {
                     default:
                         System.out.println("Invalid choice, please try again.");
                 }
-            } else if (input[0].equals("instructor")) {
+            } else if (input[0].equals("2")) {
                 switch (choice) {
                     case 1:
                         input[1] = "view";
@@ -108,7 +112,7 @@ public class Terminal {
                     default:
                         System.out.println("Invalid choice, please try again.");
                 }
-            } else if (input[0].equals("Admin")) {
+            } else if (input[0].equals("3")) {
                 switch (choice) {
                     case 1:
                         input[1] = "view";
@@ -140,7 +144,8 @@ public class Terminal {
             System.out.println("\n=== Welcome to the Lesson Booking System ===");
             System.out.println("1. Login");
             System.out.println("2. Register");
-            System.out.println("3. Exit");
+            System.out.println("3. View Offerings");
+            System.out.println("4. Exit");
         } 
         else if (user.equals("Client")) {
             // Options for Clients
