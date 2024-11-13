@@ -10,32 +10,37 @@ actor Admin
 
 rectangle System {
     usecase "Register" as Register
-    usecase "Take Offer" as TakeOffer
+    usecase "Take Lesson" as TakeOffer
     usecase "View Offerings" as ViewOfferings
     usecase "Login" as Login
     usecase "Create Booking" as CreateBooking
     usecase "Cancel Booking" as CancelBooking
+    usecase "Authenticate" as Auth
     usecase "View Bookings" as ViewBookings
-    usecase "Cancel Booking" as CancelBooking
-    usecase "Delete Account" as DeleteAccount
+    usecase "Manage Accounts" as ManageAccount
     usecase "Create Offering" as CreateOffer
+    usecase "Manage Bookings" as ManageBooking
 }
 
 ViewOfferings <-- Public
-Register <-- Public
-
-Client --> Login
+Auth <-- Public
+Client --> ManageBooking
+Client --> Auth
 Client --> ViewOfferings
-Client --> CreateBooking
 Client --> ViewBookings
-Client --> CancelBooking
 
-Instructor --> Login
+ManageBooking ..> CreateBooking
+ManageBooking ..> CancelBooking
+
+Auth ..> Login
+Auth ..> Register
+
+Instructor --> Auth 
 Instructor --> TakeOffer
 
 Admin --> Login
 Admin --> CreateOffer
-Admin --> DeleteAccount
+Admin --> ManageAccount
 Admin --> ViewBookings
-Admin --> CancelBooking
+Admin --> ManageBooking
 @enduml
