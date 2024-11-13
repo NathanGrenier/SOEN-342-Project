@@ -112,10 +112,8 @@ public class App {
         String operation = input[1];
         switch (operation) {
             case "login":
-                login(input);
                 break;
             case "register":
-                register(input);
                 break;
             default:
                 System.out.println("Invalid operation for Public. Please try again.");
@@ -123,6 +121,7 @@ public class App {
     }
 
     private void viewClientOfferings() {
+        
         System.out.println("Viewing offerings as Client...");
     }
 
@@ -156,13 +155,5 @@ public class App {
 
     private void deleteUser(String user) {
         System.out.println("Deleting user: " + user);
-    }
-
-    private void login(String[] input) {
-        System.out.println("Logging in with username: " + input[2]);
-    }
-
-    private void register(String[] input) {
-        System.out.println("Registering with username: " + input[2]);
     }
 }
