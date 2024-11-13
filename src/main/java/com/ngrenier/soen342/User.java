@@ -28,5 +28,7 @@ public class User {
     public void cancelBooking(){}
     public void editOffering(){}
     public void deleteOffering(){}
+    public boolean register(){return true;}
+    public boolean login(){return true;}
     
 }

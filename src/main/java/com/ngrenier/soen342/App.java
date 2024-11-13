@@ -1,13 +1,16 @@
 package com.ngrenier.soen342;
 
 import com.ngrenier.soen342.config.DatabaseConfig;
+import com.ngrenier.soen342.services.AuthenticationService;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Scanner;
+
 
 public class App {
-    public static void main(String[] args) {
+    public App() {
         try {
             DatabaseConfig.migrateDatabase();
 
@@ -30,9 +33,17 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //initialize ui
-        Ui ui = new Ui();
-        ui.run();
 
     }
+    /* args contains choice of method and user type
+     * args[0]: user type
+     * args[1]: method
+     * args[2+]: parameters (login info/object selection)
+     */
+    public String processInput(String[] args){
+        return "";
+    }
+    
+
 }
+
