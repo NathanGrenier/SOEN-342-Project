@@ -79,10 +79,6 @@ public class ClientRecords {
         clients.put(client.getId(), client);
     }
 
-    public Client getClientById(int id) {
-        return clients.get(id);
-    }
-
     public Map<Integer, Client> getClients() {
         fetchAllClients();
         return clients;

@@ -1,0 +1,9 @@
+-- Enable the pgcrypto extension
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS admin_session (
+    AS_UUID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    A_ID INT NOT NULL,
+    AS_CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (A_ID) REFERENCES Admin(A_ID)
+);

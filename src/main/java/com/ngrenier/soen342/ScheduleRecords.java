@@ -64,10 +64,6 @@ public class ScheduleRecords {
         schedules.put(schedule.getId(), schedule);
     }
 
-    public Schedule getScheduleById(int id) {
-        return schedules.get(id);
-    }
-
     public Map<Integer, Schedule> getSchedules() {
         fetchAllSchedules();
         return schedules;

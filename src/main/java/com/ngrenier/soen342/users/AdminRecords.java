@@ -70,10 +70,6 @@ public class AdminRecords {
         admins.put(admin.getId(), admin);
     }
 
-    public Admin getAdminById(int id) {
-        return admins.get(id);
-    }
-
     public Map<Integer, Admin> getAdmins() {
         fetchAllAdmins();
         return admins;

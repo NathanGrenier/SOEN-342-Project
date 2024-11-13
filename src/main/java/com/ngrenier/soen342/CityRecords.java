@@ -43,12 +43,38 @@ public class CityRecords {
         }
     }
 
-    public void addCity(City city) {
-        cities.put(city.getId(), city);
+    public City createCity(String name, String province) {
+        String sql = "INSERT INTO City (CI_NAME, CI_PROVINCE) VALUES (?, ?) RETURNING CI_ID";
+
+        City newCity = null;
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, province);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int cityId = rs.getInt("CI_ID");
+                newCity = new City(cityId, name, province);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return newCity;
     }
 
-    public City getCityById(int id) {
-        return cities.get(id);
+    public void displayCities() {
+        fetchAllCities();
+        System.out.println("Cities:");
+        for (City city : cities.values()) {
+            System.out.println(city.getName() + " (" + city.getProvince() + ")");
+        }
+    }
+
+    public void addCity(City city) {
+        cities.put(city.getId(), city);
     }
 
     public Map<Integer, City> getCities() {

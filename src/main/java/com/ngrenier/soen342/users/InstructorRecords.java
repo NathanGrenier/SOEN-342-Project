@@ -41,8 +41,8 @@ public class InstructorRecords {
     }
 
     public void fetchAllInstructors() {
-        cities.fetchAllCities();
-        specializations.fetchAllSpecializations();
+        Map<Integer, City> cityMap = cities.getCities();
+        Map<Integer, Specialization> specializationMap = specializations.getSpecializations();
 
         ArrayList<Integer> instructorIds = new ArrayList<>();
 
@@ -90,13 +90,12 @@ public class InstructorRecords {
                 HashMap<Integer, City> userCities = new HashMap<>();
 
                 for (String iSpecializationId : iSpecializationIds.split(", ")) {
-                    Specialization specialization = specializations
-                            .getSpecializationById(Integer.parseInt(iSpecializationId));
+                    Specialization specialization = specializationMap.get(Integer.parseInt(iSpecializationId));
                     userSpecializations.put(specialization.getId(), specialization);
                 }
 
                 for (String iCityId : iCityIds.split(", ")) {
-                    City city = cities.getCityById(Integer.parseInt(iCityId));
+                    City city = cityMap.get(Integer.parseInt(iCityId));
                     userCities.put(city.getId(), city);
                 }
 
@@ -125,10 +124,6 @@ public class InstructorRecords {
         instructors.put(instructor.getId(), instructor);
     }
 
-    public Instructor getInstructorById(int id) {
-        return instructors.get(id);
-    }
-
     public Map<Integer, Instructor> getInstructors() {
         fetchAllInstructors();
         return instructors;
@@ -136,5 +131,21 @@ public class InstructorRecords {
 
     public void setInstructors(Map<Integer, Instructor> instructors) {
         this.instructors = instructors;
+    }
+
+    public CityRecords getCityRecords() {
+        return cities;
+    }
+
+    public void setCityRecords(CityRecords cities) {
+        this.cities = cities;
+    }
+
+    public SpecializationRecords getSpecializationRecords() {
+        return specializations;
+    }
+
+    public void setSpecializationRecords(SpecializationRecords specializations) {
+        this.specializations = specializations;
     }
 }

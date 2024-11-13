@@ -41,12 +41,36 @@ public class SpecializationRecords {
         }
     }
 
-    public void addSpecialization(Specialization specialization) {
-        specializations.put(specialization.getId(), specialization);
+    public Specialization createSpecialization(String name) {
+        String sql = "INSERT INTO Specialization (S_NAME) VALUES (?) RETURNING S_ID";
+
+        Specialization newSpecialization = null;
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int specializationId = rs.getInt("S_ID");
+                newSpecialization = new Specialization(specializationId, name);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return newSpecialization;
     }
 
-    public Specialization getSpecializationById(int id) {
-        return specializations.get(id);
+    public void displaySpecializations() {
+        fetchAllSpecializations();
+        System.out.println("Specializations:");
+        for (Specialization specialization : specializations.values()) {
+            System.out.println(specialization.getName());
+        }
+    }
+
+    public void addSpecialization(Specialization specialization) {
+        specializations.put(specialization.getId(), specialization);
     }
 
     public Map<Integer, Specialization> getSpecializations() {

@@ -43,8 +43,8 @@ public class BookingRecords {
     public void fetchAllBookings() {
         ArrayList<Integer> bookingHashes = new ArrayList<>();
 
-        clients.fetchAllClients();
-        offerings.fetchAllOfferings();
+        Map<Integer, Client> clientMap = clients.getClients();
+        Map<Integer, Offering> offeringMap = offerings.getOfferings();
 
         String sql = "SELECT * FROM Booking";
 
@@ -56,8 +56,8 @@ public class BookingRecords {
                 int clientId = rs.getInt("C_ID");
                 int OfferingId = rs.getInt("O_ID");
 
-                Client client = clients.getClientById(clientId);
-                Offering offering = offerings.getOfferingById(OfferingId);
+                Client client = clientMap.get(clientId);
+                Offering offering = offeringMap.get(OfferingId);
 
                 int hash = Booking.calculateHash(client, offering);
 
@@ -80,10 +80,6 @@ public class BookingRecords {
 
     public void addBooking(Booking booking) {
         bookings.put(booking.hashCode(), booking);
-    }
-
-    public Booking getBookingByHash(int hash) {
-        return bookings.get(hash);
     }
 
     public Map<Integer, Booking> getBookings() {
