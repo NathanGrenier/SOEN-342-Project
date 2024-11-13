@@ -7,25 +7,18 @@ VALUES
     ('Quebec City', 'Quebec');
 
 INSERT INTO
-    Location_Type (LT_NAME)
+    Location (L_FACILITY, L_ROOM_NAME, L_TYPE, CI_ID)
 VALUES
-    ('Room'),
-    ('Gym'),
-    ('Pool') ON CONFLICT (LT_NAME) DO NOTHING;
-
-INSERT INTO
-    Location (L_FACILITY, L_ROOM_NAME, LT_ID, CI_ID)
-VALUES
-    ('YMCA', 'Room 1', 1, 3),
-    ('YMCA', 'Room 2', 1, 3),
-    ('YMCA', 'Room 3', 1, 3),
-    ('YMCA', 'Gym 1', 2, 3),
-    ('YMCA', 'Gym 2', 2, 3),
-    ('Boy''s and Girl''s Club', 'Gym 1', 2, 1),
-    ('Boy''s and Girl''s Club', 'Room L2', 1, 1),
-    ('Aqua Park', 'Beginner Pool', 3, 1),
-    ('Aqua Park', 'Beginner Pool', 3, 3),
-    ('Aqua Park', 'Deep End', 3, 3);
+    ('YMCA', 'Room 1', 'Room', 3),
+    ('YMCA', 'Room 2', 'Room', 3),
+    ('YMCA', 'Room 3', 'Room', 3),
+    ('YMCA', 'Gym 1', 'Gym', 3),
+    ('YMCA', 'Gym 2', 'Gym', 3),
+    ('Boy''s and Girl''s Club', 'Gym 1', 'Gym', 1),
+    ('Boy''s and Girl''s Club', 'Room L2', 'Room', 1),
+    ('Aqua Park', 'Beginner Pool', 'Pool', 1),
+    ('Aqua Park', 'Beginner Pool', 'Pool', 3),
+    ('Aqua Park', 'Deep End', 'Pool', 3);
 
 INSERT INTO
     Admin (A_NAME, A_USERNAME, A_PASSWORD)

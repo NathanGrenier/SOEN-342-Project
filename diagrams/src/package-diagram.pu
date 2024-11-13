@@ -11,9 +11,58 @@ package System {
 
     package Services {
         class AuthenticationService {}
+        class App as "Main::App"
+        
+        AuthenticationService <- App
+    }
+
+    package Users {
+        class App as "Main::App"
+
+        abstract User {
+            name
+            userName
+            password
+        }
+        class ClientRecords {}
+        class Client {
+            age
+        }
+        
+        class SpecializationRecords {}
+        class Specialization {
+            name
+        }
+        class InstructorRecords {}
+        class Instructor {
+            phoneNumber
+        }
+        class AdminRecords {}
+        class Admin {}
+        
+        App --> AdminRecords
+        App --> ClientRecords
+
+        User <|-right- Client
+        User <|-down- Instructor
+        User <|-left- Admin
+        
+        AdminRecords *- Admin
+
+        Client "0..1" -- "1" Client: guardianOf
+
+        ClientRecords *-left- Client
+
+        SpecializationRecords *- Specialization
+        
+        Instructor "1" -- "*" Specialization: specializesIn
+
+        InstructorRecords *- Instructor
+        InstructorRecords -left-> SpecializationRecords
     }
 }
 
-Main ..> Config
-Main .> Services
+Main .left.> Config
+Main .up.> Services
+Main .down.> Users
 @enduml

@@ -6,46 +6,27 @@ skinparam linetype ortho
 
 package Main {
     class Terminal {}
-    class App {}
-    class Services::AuthenticationService {}
-    class Config::DatabaseConfig {}
-
-
-    class UserRecords {}
-    abstract User {
-        name
-        userName
-        password
-    }
-    class Client {
-        age
-    }
-    class Specialization {
-        name
-    }
-    class Instructor {
-        phoneNumber
-    }
-    class Admin {}
-
-    class OfferingRecords {}
-    class Offering {
-        lesson
-        maxCapacity
-        /currentCapacity
-        /isPrivate
+    class App {
+        currentUser
     }
 
+    class InstructorRecords as "Users::InstructorRecords"  {}
+    class Client as "Users::Client" {}
+    class Instructor as "Users::Instructor" {}
+
+    class CityRecords {}
     class City {
         name
         province
     }
+    class LocationRecords {}
     class Location {
         facility
         roomName
         type
     }
 
+    class ScheduleRecords {}
     class Schedule {
         startDate
         endDate
@@ -56,38 +37,49 @@ package Main {
         endTime
     }
 
+    class OfferingRecords {}
+    class Offering {
+        lesson
+        maxCapacity
+        /currentCapacity
+        /isPrivate
+    }
+
     class BookingRecords {}
     class Booking {}
 
-    App "1" -up- "1" Terminal
-    App "1" -up- "1" Services::AuthenticationService
-    App "1" - "1" Config::DatabaseConfig: initializes
-    App -- UserRecords
-    App -- OfferingRecords
-    App -- BookingRecords
+    App "1" <-up- "1" Terminal
+    App --> OfferingRecords
+    App --> BookingRecords
+    App -> InstructorRecords
 
-    User <|-- Client
-    User <|-- Instructor
-    User <|-- Admin
+    InstructorRecords -> CityRecords
 
-    UserRecords *- User 
+    City -* CityRecords
 
     Location "*" -up-> "1" City: in
 
+    LocationRecords --> CityRecords
+    LocationRecords *-up- Location
+    LocationRecords <-- OfferingRecords
+
     Schedule *- TimeSlot: has
 
+    ScheduleRecords *-- Schedule
+    ScheduleRecords <-- OfferingRecords
+
     Offering --* OfferingRecords
-    Offering "1" - "1" Schedule: at
-    Offering "1" -- "1" Location: in
+    Offering "1" --> "1" Schedule: at
+    Offering "1" --> "1" Location: in
 
-    Instructor "1" -- "*" Specialization: specializesIn
+    OfferingRecords -> InstructorRecords
+
     Instructor "1" -- "*" City: availableIn
-    Instructor "0..1" -- "*" Offering: taughtBy
+    Instructor "0..1" <-- "*" Offering: taughtBy
 
-    Client "*" - "*" Offering
-    Client "0..1" -- "1" Client: guardianOf
+    Client "*" -- "*" Offering
 
     (Client, Offering) -- Booking
-    Booking -left-* BookingRecords
+    Booking --* BookingRecords
 }
 @enduml

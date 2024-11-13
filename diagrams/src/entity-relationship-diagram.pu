@@ -13,18 +13,12 @@ entity City {
     CI_PROVINCE: string 
 }
 
-entity LocationType {
-    PK LT_ID: int
-    --
-    LT_NAME: string
-}
-
 entity Location {
     PK L_ID: int
     --
     L_FACILITY: string
     L_ROOM_NAME: string
-    FK LT_ID: int
+    L_TYPE: string
     FK CI_ID: int
 }
 
@@ -53,7 +47,7 @@ entity Instructor {
     I_PASSWORD: string
     I_PHONE: string
 }
-entity InstructorCity{
+entity Instructor_City{
     PK FK I_ID: int
     PK FK CI_ID: int
 }
@@ -63,7 +57,7 @@ entity Specialization {
     --
     S_NAME: string
 }
-entity InstructorSpecialization {
+entity Instructor_Specialization {
     PK FK I_ID: int
     PK FK S_ID: int
 }
@@ -74,7 +68,7 @@ entity Schedule {
     SC_START_DATE: Date
     SC_END_DATE: Date
 }
-entity TimeSlot {
+entity Time_Slot {
     PK TS_ID: int
     --
     TS_DAY: DAY_OF_WEEK
@@ -101,8 +95,6 @@ entity Booking {
 }
 
 ' Relationships
-Location ||--|| LocationType
-
 Offering }o-up-|| Instructor
 Offering ||--|{ Booking
 Offering }o-|| Location
@@ -111,14 +103,14 @@ Offering ||--|| Schedule
 Booking }|--|| Client
 
 City ||-o{ Location
-City ||-|{ InstructorCity
+City ||-|{ Instructor_City
 
-Schedule ||--|{ TimeSlot
+Schedule ||--|{ Time_Slot
 
-Instructor ||-right-|{ InstructorCity
-Instructor ||-left-|{ InstructorSpecialization
+Instructor ||-right-|{ Instructor_City
+Instructor ||-left-|{ Instructor_Specialization
 
-InstructorSpecialization }|--|| Specialization
+Instructor_Specialization }|--|| Specialization
 
 ' Position Admin
 Location ||-|| Empty

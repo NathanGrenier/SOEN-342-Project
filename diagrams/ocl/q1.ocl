@@ -1,4 +1,4 @@
-Question: "Offerings are unique.  In other words, multiple offerings on the same day and time slot must be offered at a different location."
+Question: "Offerings are unique. In other words, multiple offerings on the same day and time slot must be offered at a different location."
 
 context Offering:
 inv: not self.offeringrecords.offering -> exists (o:Offering |

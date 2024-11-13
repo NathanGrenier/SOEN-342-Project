@@ -1,7 +1,35 @@
 package com.ngrenier.soen342;
 
-public class App {
+import com.ngrenier.soen342.services.AuthenticationService;
+import com.ngrenier.soen342.users.AdminRecords;
+import com.ngrenier.soen342.users.ClientRecords;
+import com.ngrenier.soen342.users.InstructorRecords;
+import com.ngrenier.soen342.users.User;
 
+public class App {
+    private AuthenticationService authService = new AuthenticationService();
+    private User currentUser = null;
+
+    private AdminRecords adminRecords = AdminRecords.getInstance();
+    private ClientRecords clientRecords = ClientRecords.getInstance();
+    private InstructorRecords instructorRecords = InstructorRecords.getInstance();
+
+    private OfferingRecords offeringRecords = OfferingRecords.getInstance();
+    private BookingRecords bookingRecords = BookingRecords.getInstance();
+
+    private static App instance = new App();
+    public App(){
+    }
+    public static App getInstance() {
+        return instance;
+    }
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
     public void processInput(String[] input) {
         String userType = input[0];
         switch (userType) {

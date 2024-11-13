@@ -4,6 +4,7 @@ import java.util.Scanner;
 public class Terminal {
     public static void main(String[] args) {
         String[] input = new String[10];
+        input[0] = "";
         Scanner scanner = new Scanner(System.in);
         App app = new App();
         boolean running = true;
