@@ -18,54 +18,53 @@ public class App {
     private BookingRecords bookingRecords = BookingRecords.getInstance();
 
     private static App instance = new App();
-
-    private App() {
+    public App(){
     }
-
     public static App getInstance() {
         return instance;
     }
-
-    public void display() {
-        // offeringRecords.getOfferings().forEach((k, v) -> {
-        // System.out.println(v.getLesson());
-        // System.out.println(v.getInstructor() != null ? v.getInstructor().getName() :
-        // "No Instructor");
-        // Location location = v.getLocation();
-        // System.out.println("Location:");
-        // System.out.println("\t" + location.getFacility());
-        // System.out.println("\t" + location.getRoomName());
-        // System.out.println("\t" + location.getType());
-        // System.out.println("\t" + location.getCity().getName());
-
-        // Schedule schedule = v.getSchedule();
-        // System.out.println("Schedule:");
-        // System.out.println("\t" + schedule.getStartDate());
-        // System.out.println("\t" + schedule.getEndDate());
-        // List<TimeSlot> timeSlot = schedule.getTimeSlots();
-        // timeSlot.forEach(ts -> {
-        // System.out.println("\t\t" + ts.getDay());
-        // System.out.println("\t\t" + ts.getStartTime());
-        // System.out.println("\t\t" + ts.getEndTime());
-        // });
-        // });
-
-        // bookingRecords.getBookings().forEach((k, v) -> {
-        // System.out.println("Booking: " + k);
-        // System.out.println(v.getClient() != null ? v.getClient().getName() : "No
-        // Client");
-        // System.out.println(v.getOffering().getLesson() + " with " +
-        // (v.getOffering().getInstructor() != null
-        // ? v.getOffering().getInstructor().getName()
-        // : "No Instructor"));
-        // });
-    }
-
     public User getCurrentUser() {
         return currentUser;
     }
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
+    }
+    
+    public void viewClientOfferings() {
+        
+        System.out.println("Viewing offerings as Client...");
+    }
+
+    public void bookClientOffering(String offering) {
+        System.out.println("Booking offering: " + offering);
+    }
+
+    public void viewClientBookings() {
+        System.out.println("Viewing Client bookings...");
+    }
+
+    public void cancelClientBooking(String booking) {
+        System.out.println("Cancelling Client booking: " + booking);
+    }
+
+    public void viewInstructorOfferings() {
+        System.out.println("Viewing offerings as Instructor...");
+    }
+
+    public void acceptInstructorLesson(String lesson) {
+        System.out.println("Accepting lesson: " + lesson);
+    }
+    //admin methods
+    public void viewAllBookings() {
+        System.out.println("Viewing all bookings as Admin...");
+    }
+
+    public void editOfferings(String[] input) {
+        System.out.println("Editing offerings as Admin...");
+    }
+
+    public void deleteUser(String user) {
+        System.out.println("Deleting user: " + user);
     }
 }
