@@ -15,30 +15,29 @@ rectangle System {
     usecase "Login" as Login
     usecase "Create Booking" as CreateBooking
     usecase "Cancel Booking" as CancelBooking
-    usecase "Authenticate" as Auth
+    usecase "Register Client" as RegisterClient
+    usecase "Register Instructor" as RegisterInstructor
     usecase "View Bookings" as ViewBookings
     usecase "Manage Accounts" as ManageAccount
     usecase "Create Offering" as CreateOffer
     usecase "Manage Bookings" as ManageBooking
 }
 
-ViewOfferings <-- Public
-Auth <-- Public
+Public --> ViewOfferings
+Public --> Register
+Public --> Login
 Client --> ManageBooking
-Client --> Auth
 Client --> ViewOfferings
 Client --> ViewBookings
 
 ManageBooking ..> CreateBooking
 ManageBooking ..> CancelBooking
 
-Auth ..> Login
-Auth ..> Register
+Register ..> RegisterClient
+Register ..> RegisterInstructor
 
-Instructor --> Auth 
 Instructor --> TakeOffer
 
-Admin --> Login
 Admin --> CreateOffer
 Admin --> ManageAccount
 Admin --> ViewBookings
