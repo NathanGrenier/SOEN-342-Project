@@ -1,6 +1,5 @@
 package com.ngrenier.soen342;
 
-import com.ngrenier.soen342.config.DatabaseConfig;
 import com.ngrenier.soen342.services.AuthenticationService;
 import com.ngrenier.soen342.users.AdminRecords;
 import com.ngrenier.soen342.users.ClientRecords;
@@ -25,18 +24,6 @@ public class App {
 
     public static App getInstance() {
         return instance;
-    }
-
-    public void runMigrations() {
-        if (currentUser == null || !currentUser.isAdmin()) {
-            return;
-        }
-
-        try {
-            DatabaseConfig.migrateDatabase();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void display() {
