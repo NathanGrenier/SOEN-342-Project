@@ -1,0 +1,31 @@
+@startuml
+title Sequence Diagram for Instructor Taking an Offering
+
+actor Instructor
+participant Terminal
+participant App
+participant OfferingRecords
+participant Offering
+participant InstructorRecords
+
+Instructor -> Terminal: viewOfferings()
+Terminal -> App: getAvailableOfferings()
+App -> OfferingRecords: getAvailableOfferings()
+OfferingRecords --> App: List of Offerings
+App --> Terminal: List of Offerings
+Terminal --> Instructor: Display available Offerings
+
+Instructor -> Terminal: acceptOffering(Offering)
+Terminal -> App: setOffering(Offering, Instructor)
+App -> Offering: setInstructor(Offering)
+
+alt Success
+    Offering --> App: Marked Offering as accepted
+    App --> Terminal: Confirmation message
+else Failure
+    Offering --> App: Availability error message
+    App --> Terminal: Error message
+end
+Terminal --> Instructor: Display status message
+
+@enduml

@@ -2,13 +2,13 @@ package com.ngrenier.soen342;
 
 import com.ngrenier.soen342.services.AuthenticationService;
 import com.ngrenier.soen342.services.RegistrationService;
+
 import com.ngrenier.soen342.users.Admin;
 import com.ngrenier.soen342.users.AdminRecords;
 import com.ngrenier.soen342.users.Client;
 import com.ngrenier.soen342.users.ClientRecords;
 import com.ngrenier.soen342.users.Instructor;
 import com.ngrenier.soen342.users.InstructorRecords;
-import com.ngrenier.soen342.users.SpecializationRecords;
 import com.ngrenier.soen342.users.User;
 
 public class App {
@@ -25,7 +25,7 @@ public class App {
 
     private static App instance = new App();
 
-    private App() {
+    public App() {
     }
 
     public static App getInstance() {
@@ -111,14 +111,6 @@ public class App {
         instructorRecords.getCityRecords().displayCities();
     }
 
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
     public String getCurrentUserType() {
         if (currentUser instanceof Admin) {
             return "Admin";
@@ -126,8 +118,18 @@ public class App {
             return "Instructor";
         } else if (currentUser instanceof Client) {
             return "Client";
+        } else if (currentUser == null) {
+            return "Public";
         } else {
             return "Unknown";
         }
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 }
