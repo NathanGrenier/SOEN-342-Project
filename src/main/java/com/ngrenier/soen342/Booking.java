@@ -1,13 +1,5 @@
 package com.ngrenier.soen342;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.ngrenier.soen342.config.DatabaseConfig;
 import com.ngrenier.soen342.users.Client;
 
 public class Booking {
@@ -17,32 +9,6 @@ public class Booking {
     public Booking(Client client, Offering offering) {
         this.client = client;
         this.offering = offering;
-    }
-
-    public static List<Booking> fetchAllBookings() {
-        List<Booking> bookings = new ArrayList<>();
-
-        String sql = "SELECT * FROM Booking";
-
-        try (Connection conn = DatabaseConfig.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int clientId = rs.getInt("C_ID");
-                int OfferingId = rs.getInt("O_ID");
-
-                Client client = App.getUserById(Client.class, clientId);
-                Offering offering = App.getOfferingById(OfferingId);
-
-                Booking booking = new Booking(client, offering);
-                bookings.add(booking);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return bookings;
     }
 
     @Override
@@ -57,11 +23,15 @@ public class Booking {
         return client.equals(booking.client) && offering.equals(booking.offering);
     }
 
-    @Override
-    public int hashCode() {
+    public static int calculateHash(Client client, Offering offering) {
         int result = client.hashCode();
         result = 31 * result + offering.hashCode();
         return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return calculateHash(client, offering);
     }
 
     public Client getClient() {

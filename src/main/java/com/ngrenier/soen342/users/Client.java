@@ -1,15 +1,5 @@
 package com.ngrenier.soen342.users;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-
-import com.ngrenier.soen342.App;
-import com.ngrenier.soen342.Booking;
-import com.ngrenier.soen342.config.DatabaseConfig;
-
 public class Client extends User {
     private int age;
     private int guardianId;
@@ -23,36 +13,21 @@ public class Client extends User {
         this.guardian = guardian;
     }
 
-    public static ArrayList<Client> fetchAllClients() {
-        ArrayList<Client> clients = new ArrayList<>();
-
-        String sql = "SELECT * FROM Client";
-
-        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("C_ID");
-                String name = rs.getString("C_NAME");
-                String username = rs.getString("C_USERNAME");
-                String password = rs.getString("C_PASSWORD");
-                int age = rs.getInt("C_AGE");
-                int guardianId = rs.getInt("GUARDIAN_ID");
-
-                clients.add(new Client(id, name, username, password, age, guardianId, null));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-
-        for (Client client : clients) {
-            for (Client guardian : clients) {
-                if (client.getGuardianId() == guardian.getId()) {
-                    client.setGuardian(guardian);
-                }
-            }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
         }
+        Client client = (Client) obj;
+        return getUsername() == client.getUsername();
+    }
 
-        return clients;
+    @Override
+    public int hashCode() {
+        return getUsername().hashCode();
     }
 
     public int getAge() {

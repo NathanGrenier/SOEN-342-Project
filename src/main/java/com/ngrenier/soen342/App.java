@@ -2,73 +2,83 @@ package com.ngrenier.soen342;
 
 import com.ngrenier.soen342.config.DatabaseConfig;
 import com.ngrenier.soen342.services.AuthenticationService;
-import com.ngrenier.soen342.users.Admin;
-import com.ngrenier.soen342.users.Client;
-import com.ngrenier.soen342.users.Instructor;
+import com.ngrenier.soen342.users.AdminRecords;
+import com.ngrenier.soen342.users.ClientRecords;
+import com.ngrenier.soen342.users.InstructorRecords;
 import com.ngrenier.soen342.users.User;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class App {
-    private Terminal terminal = new Terminal();
     private AuthenticationService authService = new AuthenticationService();
     private User currentUser = null;
 
-    private static List<Offering> offeringRecords = new ArrayList<>();
-    private static List<Booking> bookingRecords = new ArrayList<>();
-    private static List<User> userRecords = new ArrayList<>();
+    private AdminRecords adminRecords = AdminRecords.getInstance();
+    private ClientRecords clientRecords = ClientRecords.getInstance();
+    private InstructorRecords instructorRecords = InstructorRecords.getInstance();
 
-    public static void main(String[] args) {
-        // TODO: If the user is an Admin, maybe run the migrations.
-        // try {
-        // DatabaseConfig.migrateDatabase();
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
+    private OfferingRecords offeringRecords = OfferingRecords.getInstance();
+    private BookingRecords bookingRecords = BookingRecords.getInstance();
 
-        fetchUserRecords();
-        fetchOfferingRecords();
-        fetchBookingRecords();
+    private static App instance = new App();
 
-        // Ui ui = new Ui();
-        // ui.run();
+    private App() {
     }
 
-    public static <T extends User> T getUserById(Class<T> userType, int id) {
-        for (User user : userRecords) {
-            if (userType.isInstance(user) && user.getId() == id) {
-                return userType.cast(user);
-            }
+    public static App getInstance() {
+        return instance;
+    }
+
+    public void runMigrations() {
+        if (currentUser == null || !currentUser.isAdmin()) {
+            return;
         }
-        return null;
-    }
 
-    public static Offering getOfferingById(int id) {
-        for (Offering offering : offeringRecords) {
-            if (offering.getId() == id) {
-                return offering;
-            }
+        try {
+            DatabaseConfig.migrateDatabase();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
     }
 
-    private static void fetchUserRecords() {
-        ArrayList<Admin> admins = Admin.fetchAllAdmins();
-        userRecords.addAll(admins);
+    public void display() {
+        // offeringRecords.getOfferings().forEach((k, v) -> {
+        // System.out.println(v.getLesson());
+        // System.out.println(v.getInstructor() != null ? v.getInstructor().getName() :
+        // "No Instructor");
+        // Location location = v.getLocation();
+        // System.out.println("Location:");
+        // System.out.println("\t" + location.getFacility());
+        // System.out.println("\t" + location.getRoomName());
+        // System.out.println("\t" + location.getType());
+        // System.out.println("\t" + location.getCity().getName());
 
-        ArrayList<Instructor> instructors = Instructor.fetchAllInstructors();
-        userRecords.addAll(instructors);
+        // Schedule schedule = v.getSchedule();
+        // System.out.println("Schedule:");
+        // System.out.println("\t" + schedule.getStartDate());
+        // System.out.println("\t" + schedule.getEndDate());
+        // List<TimeSlot> timeSlot = schedule.getTimeSlots();
+        // timeSlot.forEach(ts -> {
+        // System.out.println("\t\t" + ts.getDay());
+        // System.out.println("\t\t" + ts.getStartTime());
+        // System.out.println("\t\t" + ts.getEndTime());
+        // });
+        // });
 
-        ArrayList<Client> clients = Client.fetchAllClients();
-        userRecords.addAll(clients);
+        // bookingRecords.getBookings().forEach((k, v) -> {
+        // System.out.println("Booking: " + k);
+        // System.out.println(v.getClient() != null ? v.getClient().getName() : "No
+        // Client");
+        // System.out.println(v.getOffering().getLesson() + " with " +
+        // (v.getOffering().getInstructor() != null
+        // ? v.getOffering().getInstructor().getName()
+        // : "No Instructor"));
+        // });
     }
 
-    private static void fetchOfferingRecords() {
-        offeringRecords = Offering.fetchAllOfferings();
+    public User getCurrentUser() {
+        return currentUser;
     }
 
-    private static void fetchBookingRecords() {
-        bookingRecords = Booking.fetchAllBookings();
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 }

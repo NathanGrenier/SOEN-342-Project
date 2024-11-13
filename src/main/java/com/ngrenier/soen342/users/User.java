@@ -1,7 +1,5 @@
 package com.ngrenier.soen342.users;
 
-import com.ngrenier.soen342.Booking;
-
 public abstract class User {
     private int id;
     private String name;
@@ -15,6 +13,10 @@ public abstract class User {
         this.password = password;
     }
 
+    public boolean isAdmin() {
+        return this instanceof Admin;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -24,12 +26,12 @@ public abstract class User {
             return false;
         }
         User user = (User) obj;
-        return id == user.id;
+        return username == user.username;
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(id);
+        return username.hashCode();
     }
 
     public int getId() {
