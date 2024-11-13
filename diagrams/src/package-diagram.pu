@@ -7,9 +7,6 @@ package System {
     
     package Config {
         class DatabaseConfig {}
-        class App as "Main::App"
-
-        DatabaseConfig <- App
     }
 
     package Services {
@@ -20,30 +17,48 @@ package System {
     }
 
     package Users {
+        class App as "Main::App"
+
         abstract User {
             name
             userName
             password
         }
+        class ClientRecords {}
         class Client {
             age
         }
+        
+        class SpecializationRecords {}
         class Specialization {
             name
         }
+        class InstructorRecords {}
         class Instructor {
             phoneNumber
         }
+        class AdminRecords {}
         class Admin {}
         
-        User <|-- Client
-        User <|-- Instructor
-        User <|-- Admin
-        UserRecords *- User 
+        App --> AdminRecords
+        App --> ClientRecords
+
+        User <|-right- Client
+        User <|-down- Instructor
+        User <|-left- Admin
+        
+        AdminRecords *- Admin
 
         Client "0..1" -- "1" Client: guardianOf
 
+        ClientRecords *-left- Client
+
+        SpecializationRecords *- Specialization
+        
         Instructor "1" -- "*" Specialization: specializesIn
+
+        InstructorRecords *- Instructor
+        InstructorRecords -left-> SpecializationRecords
     }
 }
 

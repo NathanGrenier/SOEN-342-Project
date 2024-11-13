@@ -13,18 +13,12 @@ entity City {
     CI_PROVINCE: string 
 }
 
-entity Location_Type {
-    PK LT_ID: int
-    --
-    LT_NAME: string
-}
-
 entity Location {
     PK L_ID: int
     --
     L_FACILITY: string
     L_ROOM_NAME: string
-    FK LT_ID: int
+    L_TYPE: string
     FK CI_ID: int
 }
 
@@ -101,8 +95,6 @@ entity Booking {
 }
 
 ' Relationships
-Location ||--|| Location_Type
-
 Offering }o-up-|| Instructor
 Offering ||--|{ Booking
 Offering }o-|| Location

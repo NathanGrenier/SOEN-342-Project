@@ -11,6 +11,23 @@ public class City {
         this.province = province;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        City city = (City) obj;
+        return name == city.name && province == city.province;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
     public String getName() {
         return name;
     }
