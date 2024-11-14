@@ -1,0 +1,9 @@
+@startuml Interaction Diagram: Create Booking Success
+
+@enduml
+
+' - [ ] If client.age < 18 then client.guardian must be provided
+' - [ ] “A client does not have multiple bookings on the same day and time slot.” (for 
+' simplicity we consider only identical day and time slots, even though in reality a 
+' booking on Monday 3pm - 4pm and another also on Monday 3:30pm - 4:30pm 
+' should not be acceptable.) 
