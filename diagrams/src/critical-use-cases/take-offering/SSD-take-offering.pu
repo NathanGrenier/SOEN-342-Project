@@ -1,4 +1,4 @@
-@startuml 
+@startuml System Sequence Diagram: Instructor Taking an Offering
 title System Sequence Diagram: Instructor Taking an Offering
 
 actor Instructor
