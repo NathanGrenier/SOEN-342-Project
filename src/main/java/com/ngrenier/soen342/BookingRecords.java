@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.ngrenier.soen342.config.DatabaseConfig;
 import com.ngrenier.soen342.users.Client;
@@ -105,6 +107,37 @@ public class BookingRecords {
         for (Integer hash : hashes) {
             bookings.remove(hash);
         }
+    }
+
+    public void clientDisplayPublicOfferings(Client client) {
+        Map<Integer, Booking> clientBookings = getBookings().values().stream()
+                .filter(booking -> booking.getClient().equals(client))
+                .collect(Collectors.toMap(Booking::hashCode, booking -> booking));
+
+        Map<Integer, Offering> publicOfferings = offerings.getOfferings();
+        publicOfferings.values().stream()
+                .filter(offering -> offering.getInstructor() != null)
+                .forEach(offering -> {
+                    boolean isBooked = clientBookings.values().stream()
+                            .anyMatch(booking -> booking.getOffering().equals(offering));
+
+                    String offeringTitle = String.format(
+                            "\n%s: %s%s%s taught by %s at %s (%s) in %s, %s. Current Capacity: %d/%d",
+                            offering.getId(),
+                            isBooked ? "[UNAVAILABLE] " : "",
+                            offering.isPrivate() ? "Private " : "",
+                            offering.getLesson(),
+                            offering.getInstructor().getName(),
+                            offering.getLocation().getFacility(),
+                            offering.getLocation().getRoomName(),
+                            offering.getLocation().getCity().getName(),
+                            offering.getLocation().getCity().getProvince(),
+                            offering.getCurrentCapacity(),
+                            offering.getMaxCapacity());
+                    System.out.println(offeringTitle);
+
+                    Schedule.displaySchedule(offering.getSchedule());
+                });
     }
 
     public void addBooking(Booking booking) {

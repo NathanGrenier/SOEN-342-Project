@@ -107,6 +107,14 @@ public class App {
         instructorRecords.getCityRecords().displayCities();
     }
 
+    public void clientViewPublicOfferings() {
+        if (currentUser instanceof Client) {
+            bookingRecords.clientDisplayPublicOfferings((Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be a client to view their annotated offerings.");
+        }
+    }
+
     public void deleteUser(String userType, String username) {
         switch (userType) {
             case "I":
