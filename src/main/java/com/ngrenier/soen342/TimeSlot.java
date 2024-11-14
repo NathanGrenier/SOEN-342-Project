@@ -19,6 +19,23 @@ public class TimeSlot {
         this.endTime = endTime;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        TimeSlot timeSlot = (TimeSlot) obj;
+        return day == timeSlot.day && startTime.equals(timeSlot.startTime) && endTime.equals(timeSlot.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
     public int getId() {
         return id;
     }
