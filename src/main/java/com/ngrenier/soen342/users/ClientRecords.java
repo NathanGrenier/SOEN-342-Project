@@ -75,12 +75,36 @@ public class ClientRecords {
         pruneDeletedClients(clientIds);
     }
 
-    public void addClient(Client client) {
-        clients.put(client.getId(), client);
+    public void displayClients() {
+        System.out.println("+-----------------+-----------------+-----------------+-----+------------------+");
+        System.out.println("| Name            | Username        | Password        | Age | Guardian Username|");
+        System.out.println("+-----------------+-----------------+-----------------+-----+------------------+");
+        for (Client client : getClients().values()) {
+            System.out.printf("| %-15s | %-15s | %-15s | %-3d | %-15s |%n",
+                    client.getName(), client.getUsername(), client.getPassword(), client.getAge(),
+                    client.getGuardian() != null ? client.getGuardian().getUsername() : "N/A");
+        }
+        System.out.println("+-----------------+-----------------+-----------------+-----+-----------------+");
     }
 
-    public Client getClientById(int id) {
-        return clients.get(id);
+    public void deleteClient(String username) {
+        int clientId = clients.values().stream().filter(client -> client.getUsername().equals(username))
+                .findFirst().map(Client::getId).orElseThrow(() -> new IllegalStateException(
+                        "Client with the username of '" + username + "' was not found."));
+
+        String sql = "DELETE FROM Client WHERE C_ID = ?";
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, clientId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        clients.remove(clientId);
+    }
+
+    public void addClient(Client client) {
+        clients.put(client.getId(), client);
     }
 
     public Map<Integer, Client> getClients() {

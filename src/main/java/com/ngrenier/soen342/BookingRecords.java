@@ -43,8 +43,8 @@ public class BookingRecords {
     public void fetchAllBookings() {
         ArrayList<Integer> bookingHashes = new ArrayList<>();
 
-        clients.fetchAllClients();
-        offerings.fetchAllOfferings();
+        Map<Integer, Client> clientMap = clients.getClients();
+        Map<Integer, Offering> offeringMap = offerings.getOfferings();
 
         String sql = "SELECT * FROM Booking";
 
@@ -56,8 +56,8 @@ public class BookingRecords {
                 int clientId = rs.getInt("C_ID");
                 int OfferingId = rs.getInt("O_ID");
 
-                Client client = clients.getClientById(clientId);
-                Offering offering = offerings.getOfferingById(OfferingId);
+                Client client = clientMap.get(clientId);
+                Offering offering = offeringMap.get(OfferingId);
 
                 int hash = Booking.calculateHash(client, offering);
 
@@ -78,12 +78,37 @@ public class BookingRecords {
         pruneDeletedBookings(bookingHashes);
     }
 
-    public void addBooking(Booking booking) {
-        bookings.put(booking.hashCode(), booking);
+    public void pruneBookingsWithoutInstructor() {
+        ArrayList<Integer> hashes = new ArrayList<>();
+        ArrayList<Integer> offeringIds = new ArrayList<>();
+
+        for (Booking booking : getBookings().values()) {
+            if (booking.getOffering().getInstructor() == null) {
+                hashes.add(booking.hashCode());
+                offeringIds.add(booking.getOffering().getId());
+            }
+        }
+
+        String sql = "DELETE FROM Booking WHERE O_ID = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (Integer offeringId : offeringIds) {
+                pstmt.setInt(1, offeringId);
+                pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        for (Integer hash : hashes) {
+            bookings.remove(hash);
+        }
     }
 
-    public Booking getBookingByHash(int hash) {
-        return bookings.get(hash);
+    public void addBooking(Booking booking) {
+        bookings.put(booking.hashCode(), booking);
     }
 
     public Map<Integer, Booking> getBookings() {

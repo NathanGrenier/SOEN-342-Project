@@ -29,6 +29,13 @@ entity Admin {
     A_USERNAME: string
     A_PASSWORD: string
 }
+entity Admin_Session {
+    PK AS_UUID: UUID
+    --
+    AS_CREATED_AT: Timestamp
+    FK A_ID: int
+}
+
 entity Client {
     PK C_ID: int
     --
@@ -111,6 +118,8 @@ Instructor ||-right-|{ Instructor_City
 Instructor ||-left-|{ Instructor_Specialization
 
 Instructor_Specialization }|--|| Specialization
+
+Admin ||--o| Admin_Session
 
 ' Position Admin
 Location ||-|| Empty

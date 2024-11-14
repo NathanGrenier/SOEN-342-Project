@@ -66,12 +66,19 @@ public class AdminRecords {
         pruneDeletedAdmins(adminIds);
     }
 
-    public void addAdmin(Admin admin) {
-        admins.put(admin.getId(), admin);
+    public void displayAdmins() {
+        System.out.println("+-------------------------+-------------------------+-------------------------+");
+        System.out.println("| Name                    | Username                | Password                |");
+        System.out.println("+-------------------------+-------------------------+-------------------------+");
+        for (Admin admin : getAdmins().values()) {
+            System.out.printf("| %-23s | %-23s | %-23s |%n",
+                    admin.getName(), admin.getUsername(), admin.getPassword());
+        }
+        System.out.println("+-------------------------+-------------------------+-------------------------+");
     }
 
-    public Admin getAdminById(int id) {
-        return admins.get(id);
+    public void addAdmin(Admin admin) {
+        admins.put(admin.getId(), admin);
     }
 
     public Map<Integer, Admin> getAdmins() {

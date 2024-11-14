@@ -1,6 +1,8 @@
 package com.ngrenier.soen342;
 
 import com.ngrenier.soen342.services.AuthenticationService;
+import com.ngrenier.soen342.services.RegistrationService;
+
 import com.ngrenier.soen342.users.Admin;
 import com.ngrenier.soen342.users.AdminRecords;
 import com.ngrenier.soen342.users.Client;
@@ -10,7 +12,8 @@ import com.ngrenier.soen342.users.InstructorRecords;
 import com.ngrenier.soen342.users.User;
 
 public class App {
-    private AuthenticationService authService = new AuthenticationService();
+    private AuthenticationService authService = AuthenticationService.getInstance();
+    private RegistrationService registrationService = RegistrationService.getInstance();
     private User currentUser = null;
 
     private AdminRecords adminRecords = AdminRecords.getInstance();
@@ -29,42 +32,93 @@ public class App {
         return instance;
     }
 
-    public void viewClientOfferings() {
+    public void login(String username, String password) throws IllegalStateException {
+        if (currentUser != null) {
+            return;
+        }
 
-        System.out.println("Viewing offerings as Client...");
+        User user = null;
+
+        user = authService.login(username, password, clientRecords.getClients(),
+                instructorRecords.getInstructors(), adminRecords.getAdmins());
+
+        if (user != null) {
+            currentUser = user;
+        }
     }
 
-    public void bookClientOffering() {
-        // System.out.println("Booking offering: " + offering);
+    public void logout() throws IllegalStateException {
+        try {
+            authService.logout(currentUser);
+        } catch (IllegalStateException e) {
+            throw e;
+        } finally {
+            currentUser = null;
+        }
     }
 
-    public void viewClientBookings() {
-        System.out.println("Viewing Client bookings...");
+    public void registerClient(String name, String username, String password, int age, String guardianUserName)
+            throws IllegalStateException {
+        Client newClient = registrationService.registerClient(name, age, username, password, guardianUserName,
+                clientRecords.getClients());
+
+        clientRecords.addClient(newClient);
     }
 
-    public void cancelClientBooking() {
-        // System.out.println("Cancelling Client booking: " + booking);
+    public boolean validateAge(int age) throws IllegalStateException {
+        return registrationService.validateAge(age);
     }
 
-    public void viewInstructorOfferings() {
-        System.out.println("Viewing offerings as Instructor...");
+    public void registerInstructor(String name, String username, String password, String phone,
+            String[] specializationNames,
+            String[] cityNames) throws IllegalStateException {
+        Instructor newInstructor = registrationService.registerInstructor(name, username, password, phone,
+                specializationNames,
+                cityNames, instructorRecords);
+
+        instructorRecords.addInstructor(newInstructor);
     }
 
-    public void acceptInstructorLesson() {
-        // System.out.println("Accepting lesson: " + lesson);
+    public boolean validatePhone(String phone) throws IllegalStateException {
+        return registrationService.validatePhone(phone);
     }
 
-    // admin methods
-    public void viewAllBookings() {
-        System.out.println("Viewing all bookings as Admin...");
+    public void displayUsers(String userType) {
+        switch (userType) {
+            case "A":
+                adminRecords.displayAdmins();
+                break;
+            case "I":
+                instructorRecords.displayInstructors();
+                break;
+            case "C":
+                clientRecords.displayClients();
+                break;
+            default:
+                System.out.println("Invalid user type.");
+        }
     }
 
-    public void editOfferings() {
-        System.out.println("Editing offerings as Admin...");
+    public void displaySpecializations() {
+        instructorRecords.getSpecializationRecords().displaySpecializations();
     }
 
-    public void deleteUser() {
-        // System.out.println("Deleting user: " + user);
+    public void displayCities() {
+        instructorRecords.getCityRecords().displayCities();
+    }
+
+    public void deleteUser(String userType, String username) {
+        switch (userType) {
+            case "I":
+                instructorRecords.deleteInstructor(username);
+                bookingRecords.pruneBookingsWithoutInstructor();
+                break;
+            case "C":
+                clientRecords.deleteClient(username);
+                break;
+            default:
+                System.out.println("Invalid user type.");
+        }
     }
 
     public String getCurrentUserType() {
