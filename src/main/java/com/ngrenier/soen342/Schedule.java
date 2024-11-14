@@ -1,7 +1,6 @@
 package com.ngrenier.soen342;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Map;
 
 public class Schedule {
@@ -26,7 +25,7 @@ public class Schedule {
         printTimeSlotsTable(schedule.getTimeSlots());
     }
 
-    private static void printTimeSlotsTable(Map<Integer, TimeSlot> timeSlots) {
+    public static void printTimeSlotsTable(Map<Integer, TimeSlot> timeSlots) {
         int maxLength = timeSlots.values().stream()
                 .mapToInt(timeSlot -> timeSlot.getDay().toString().length())
                 .max()
@@ -38,6 +37,24 @@ public class Schedule {
             String endTime = timeSlot.getEndTime().toString().substring(0, 5);
             System.out.printf("- %-" + maxLength + "s: %s-%s%n", day, startTime, endTime);
         });
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Schedule schedule = (Schedule) obj;
+        return startDate.equals(schedule.startDate) && endDate.equals(schedule.endDate)
+                && timeSlots.equals(schedule.timeSlots);
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
     }
 
     public int getId() {
