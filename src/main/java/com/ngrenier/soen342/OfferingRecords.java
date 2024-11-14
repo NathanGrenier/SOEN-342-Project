@@ -92,6 +92,25 @@ public class OfferingRecords {
         pruneDeletedOfferings(offeringIds);
     }
 
+    public void displayOfferings(Map<Integer, Offering> offerings) {
+        offerings.values().stream().forEach(offering -> {
+            String offeringTitle = String.format(
+                    "\n%s: %s%s at %s (%s) in %s, %s. Current Capacity: %d/%d",
+                    offering.getId(),
+                    offering.isPrivate() ? "Private " : "",
+                    offering.getLesson(),
+                    offering.getLocation().getFacility(),
+                    offering.getLocation().getRoomName(),
+                    offering.getLocation().getCity().getName(),
+                    offering.getLocation().getCity().getProvince(),
+                    offering.getCurrentCapacity(),
+                    offering.getMaxCapacity());
+            System.out.println(offeringTitle);
+
+            Schedule.displaySchedule(offering.getSchedule());
+        });
+    }
+
     public void addOffering(Offering offering) {
         offerings.put(offering.getId(), offering);
     }

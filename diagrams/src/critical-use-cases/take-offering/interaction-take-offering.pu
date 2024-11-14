@@ -1,4 +1,4 @@
-@startuml
+@startuml Sequence Diagram for Instructor Taking an Offering
 title Sequence Diagram for Instructor Taking an Offering
 
 actor Instructor

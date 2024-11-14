@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,19 +41,28 @@ public class ScheduleRecords {
 
                 Schedule schedule = schedules.get(scheduleId);
                 if (schedule == null) {
-                    schedule = new Schedule(scheduleId, startDate, endDate, new ArrayList<>());
+                    schedule = new Schedule(scheduleId, startDate, endDate, new HashMap<>());
                     schedules.put(scheduleId, schedule);
+                } else {
+                    schedule.setStartDate(startDate);
+                    schedule.setEndDate(endDate);
                 }
-                // NOTE: Schedules are never updated. If a schedule ever needs to be updated,
-                // add code to do so here.
 
                 int timeSlotId = rs.getInt("TS_ID");
-                if (timeSlotId > 0) {
-                    DayOfWeek day = DayOfWeek.valueOf(rs.getString("TS_DAY").toUpperCase());
-                    Time startTime = rs.getTime("TS_START_TIME");
-                    Time endTime = rs.getTime("TS_END_TIME");
-                    TimeSlot timeSlot = new TimeSlot(timeSlotId, day, startTime, endTime);
-                    schedule.timeSlots.add(timeSlot);
+                Map<Integer, TimeSlot> timeSlots = schedule.getTimeSlots();
+
+                DayOfWeek day = DayOfWeek.valueOf(rs.getString("TS_DAY").toUpperCase());
+                Time startTime = rs.getTime("TS_START_TIME");
+                Time endTime = rs.getTime("TS_END_TIME");
+
+                if (!timeSlots.containsKey(timeSlotId)) {
+                    TimeSlot newTimeSlot = new TimeSlot(timeSlotId, day, startTime, endTime);
+                    timeSlots.put(timeSlotId, newTimeSlot);
+                } else {
+                    TimeSlot timeSlot = timeSlots.get(timeSlotId);
+                    timeSlot.setDay(day);
+                    timeSlot.setStartTime(startTime);
+                    timeSlot.setEndTime(endTime);
                 }
             }
         } catch (SQLException e) {

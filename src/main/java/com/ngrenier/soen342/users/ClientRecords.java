@@ -76,15 +76,15 @@ public class ClientRecords {
     }
 
     public void displayClients() {
-        System.out.println("+-----------------+-----------------+-----------------+-----+------------------+");
-        System.out.println("| Name            | Username        | Password        | Age | Guardian Username|");
-        System.out.println("+-----------------+-----------------+-----------------+-----+------------------+");
+        System.out.println("+-----------------+-----------------+-----------------+-----+-------------------+");
+        System.out.println("| Name            | Username        | Password        | Age | Guardian Username |");
+        System.out.println("+-----------------+-----------------+-----------------+-----+-------------------+");
         for (Client client : getClients().values()) {
-            System.out.printf("| %-15s | %-15s | %-15s | %-3d | %-15s |%n",
+            System.out.printf("| %-15s | %-15s | %-15s | %-3d | %-17s |%n",
                     client.getName(), client.getUsername(), client.getPassword(), client.getAge(),
                     client.getGuardian() != null ? client.getGuardian().getUsername() : "N/A");
         }
-        System.out.println("+-----------------+-----------------+-----------------+-----+-----------------+");
+        System.out.println("+-----------------+-----------------+-----------------+-----+-------------------+");
     }
 
     public void deleteClient(String username) {
@@ -101,6 +101,21 @@ public class ClientRecords {
         }
 
         clients.remove(clientId);
+    }
+
+    public void updateGuardian(Client client, Client guardian) {
+        String sql = "UPDATE Client SET GUARDIAN_ID = ? WHERE C_ID = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, guardian.getId());
+            pstmt.setInt(2, client.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        client.setGuardian(guardian);
+        client.setGuardianId(guardian.getId());
     }
 
     public void addClient(Client client) {
