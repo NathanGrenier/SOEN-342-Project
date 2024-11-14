@@ -113,19 +113,33 @@ public class Terminal {
     }
 
     private static void handleClientOperation(int operation) {
+        // System.out.println("1. View Offerings");
+        // System.out.println("2. Make a Booking");
+        // System.out.println("3. View My Bookings");
+        // System.out.println("4. Cancel a Booking");
+        // System.out.println("5. Logout");
+
+        int offeringId;
+
         switch (operation) {
             case 1:
-                // app.viewClientOfferings();
+                app.clientViewPublicOfferings();
                 break;
             case 2:
-                System.out.println("\n=== Select an Offering by Entering its Number ===");
-                // app.bookClientOffering();
+                System.out.println("\n=== Select an Offering by its Number ===");
+
+                // app.clientViewPublicOfferings();
+
+                System.out.print("Enter the offering ID: ");
+                offeringId = scanner.nextInt();
+                scanner.nextLine();
+                // app.createBooking(offeringId);
                 break;
             case 3:
                 // app.viewClientBookings();
                 break;
             case 4:
-                // app.cancelClientBooking();
+                // app.cancelBooking(offeringId);
                 break;
             case 5:
                 try {
