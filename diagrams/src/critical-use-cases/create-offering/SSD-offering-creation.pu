@@ -1,4 +1,4 @@
-@startuml 
+@startuml System Sequence Diagram: Offering Creation
 title System Sequence Diagram: Offering Creation
 
 actor Admin
