@@ -43,6 +43,12 @@ public class LocationRecords {
                     Location location = new Location(locationId, locationFacility, locationRoomName, locationType,
                             city);
                     addLocation(location);
+                } else {
+                    Location location = locations.get(locationId);
+                    location.setFacility(locationFacility);
+                    location.setRoomName(locationRoomName);
+                    location.setType(locationType);
+                    location.setCity(cityMap.get(locationCityId));
                 }
             }
         } catch (SQLException e) {

@@ -89,14 +89,18 @@ public class InstructorRecords {
                 HashMap<Integer, Specialization> userSpecializations = new HashMap<>();
                 HashMap<Integer, City> userCities = new HashMap<>();
 
-                for (String iSpecializationId : iSpecializationIds.split(", ")) {
-                    Specialization specialization = specializationMap.get(Integer.parseInt(iSpecializationId));
-                    userSpecializations.put(specialization.getId(), specialization);
+                if (iSpecializationIds != null) {
+                    for (String iSpecializationId : iSpecializationIds.split(", ")) {
+                        Specialization specialization = specializationMap.get(Integer.parseInt(iSpecializationId));
+                        userSpecializations.put(specialization.getId(), specialization);
+                    }
                 }
 
-                for (String iCityId : iCityIds.split(", ")) {
-                    City city = cityMap.get(Integer.parseInt(iCityId));
-                    userCities.put(city.getId(), city);
+                if (iCityIds != null) {
+                    for (String iCityId : iCityIds.split(", ")) {
+                        City city = cityMap.get(Integer.parseInt(iCityId));
+                        userCities.put(city.getId(), city);
+                    }
                 }
 
                 if (!instructors.containsKey(iId)) {
@@ -118,6 +122,49 @@ public class InstructorRecords {
         }
 
         pruneDeletedInstructors(instructorIds);
+    }
+
+    public void displayInstructors() {
+        System.out.println(
+                "+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+");
+        System.out.println(
+                "| Name            | Username        | Password        | Phone Number    | Specializations | Cities          |");
+        System.out.println(
+                "+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+");
+        getInstructors().forEach((k, v) -> {
+            String specializations = String.join(", ",
+                    v.getSpecializations().values().stream().map(s -> s.getName()).toArray(String[]::new));
+            String cities = String.join(", ",
+                    v.getCities().values().stream().map(c -> c.getName()).toArray(String[]::new));
+            System.out.printf("| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n",
+                    v.getName(), v.getUsername(), v.getPassword(), v.getPhoneNumber(),
+                    specializations.length() > 15 ? specializations.substring(0, 15) : specializations,
+                    cities.length() > 15 ? cities.substring(0, 15) : cities);
+            if (specializations.length() > 15 || cities.length() > 15) {
+                System.out.printf("| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n",
+                        "", "", "", "",
+                        specializations.length() > 15 ? specializations.substring(15) : "",
+                        cities.length() > 15 ? cities.substring(15) : "");
+            }
+        });
+        System.out.println(
+                "+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+");
+    }
+
+    public void deleteInstructor(String username) {
+        int instructorId = instructors.values().stream().filter(client -> client.getUsername().equals(username))
+                .findFirst().map(Instructor::getId).orElseThrow(() -> new IllegalStateException(
+                        "Instructor with the username of '" + username + "' was not found."));
+
+        String sql = "DELETE FROM Instructor WHERE I_ID = ?";
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, instructorId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        instructors.remove(instructorId);
     }
 
     public void addInstructor(Instructor instructor) {

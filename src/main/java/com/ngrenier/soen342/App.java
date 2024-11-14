@@ -32,7 +32,6 @@ public class App {
         return instance;
     }
 
-    // TODO: Terminal should handle the case when a user was not found.
     public void login(String username, String password) throws IllegalStateException {
         if (currentUser != null) {
             return;
@@ -48,7 +47,6 @@ public class App {
         }
     }
 
-    // TODO: Terminal should handle the case when a user can't logout.
     public void logout() throws IllegalStateException {
         try {
             authService.logout(currentUser);
@@ -59,12 +57,16 @@ public class App {
         }
     }
 
-    public void registerClient(String name, int age, String username, String password, String guardianUserName)
+    public void registerClient(String name, String username, String password, int age, String guardianUserName)
             throws IllegalStateException {
         Client newClient = registrationService.registerClient(name, age, username, password, guardianUserName,
                 clientRecords.getClients());
 
         clientRecords.addClient(newClient);
+    }
+
+    public boolean validateAge(int age) throws IllegalStateException {
+        return registrationService.validateAge(age);
     }
 
     public void registerInstructor(String name, String username, String password, String phone,
@@ -81,25 +83,19 @@ public class App {
         return registrationService.validatePhone(phone);
     }
 
-    public void displayInstructors() {
-        instructorRecords.getInstructors().forEach((k, v) -> {
-            System.out.println(v.getId() + " " + v.getName() + " " + v.getUsername() + " " + v.getPhoneNumber());
-            System.out.println("Specializations: ");
-            v.getSpecializations().forEach((k1, v1) -> {
-                System.out.println("\t" + v1.getId() + " " + v1.getName());
-            });
-            System.out.println("Cities: ");
-            v.getCities().forEach((k1, v1) -> {
-                System.out.println("\t" + v1.getId() + " " + v1.getName());
-            });
-        });
-    }
-
-    public void displayClients() {
-        for (Client client : clientRecords.getClients().values()) {
-            System.out.println(
-                    client.getId() + " " + client.getName() + " " + client.getAge() + " " + client.getUsername()
-                            + " " + client.getPassword() + " " + client.getGuardianId());
+    public void displayUsers(String userType) {
+        switch (userType) {
+            case "A":
+                adminRecords.displayAdmins();
+                break;
+            case "I":
+                instructorRecords.displayInstructors();
+                break;
+            case "C":
+                clientRecords.displayClients();
+                break;
+            default:
+                System.out.println("Invalid user type.");
         }
     }
 
@@ -109,6 +105,20 @@ public class App {
 
     public void displayCities() {
         instructorRecords.getCityRecords().displayCities();
+    }
+
+    public void deleteUser(String userType, String username) {
+        switch (userType) {
+            case "I":
+                instructorRecords.deleteInstructor(username);
+                bookingRecords.pruneBookingsWithoutInstructor();
+                break;
+            case "C":
+                clientRecords.deleteClient(username);
+                break;
+            default:
+                System.out.println("Invalid user type.");
+        }
     }
 
     public String getCurrentUserType() {

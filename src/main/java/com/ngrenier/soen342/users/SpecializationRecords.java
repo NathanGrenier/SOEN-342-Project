@@ -34,6 +34,8 @@ public class SpecializationRecords {
 
                 if (!specializations.containsKey(sId)) {
                     specializations.put(sId, new Specialization(sId, sName));
+                } else {
+                    specializations.get(sId).setName(sName);
                 }
             }
         } catch (SQLException e) {
@@ -65,7 +67,7 @@ public class SpecializationRecords {
         fetchAllSpecializations();
         System.out.println("Specializations:");
         for (Specialization specialization : specializations.values()) {
-            System.out.println(specialization.getName());
+            System.out.println("- " + specialization.getName());
         }
     }
 

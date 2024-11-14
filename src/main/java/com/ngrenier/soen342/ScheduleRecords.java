@@ -45,6 +45,8 @@ public class ScheduleRecords {
                     schedule = new Schedule(scheduleId, startDate, endDate, new ArrayList<>());
                     schedules.put(scheduleId, schedule);
                 }
+                // NOTE: Schedules are never updated. If a schedule ever needs to be updated,
+                // add code to do so here.
 
                 int timeSlotId = rs.getInt("TS_ID");
                 if (timeSlotId > 0) {

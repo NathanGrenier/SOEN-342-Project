@@ -36,6 +36,10 @@ public class CityRecords {
                 if (!cities.containsKey(cityId)) {
                     City city = new City(cityId, cityName, cityProvince);
                     addCity(city);
+                } else {
+                    City city = cities.get(cityId);
+                    city.setName(cityName);
+                    city.setProvince(cityProvince);
                 }
             }
         } catch (SQLException e) {
@@ -69,7 +73,7 @@ public class CityRecords {
         fetchAllCities();
         System.out.println("Cities:");
         for (City city : cities.values()) {
-            System.out.println(city.getName() + " (" + city.getProvince() + ")");
+            System.out.println("- " + city.getName() + " (" + city.getProvince() + ")");
         }
     }
 

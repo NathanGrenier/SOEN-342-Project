@@ -78,6 +78,35 @@ public class BookingRecords {
         pruneDeletedBookings(bookingHashes);
     }
 
+    public void pruneBookingsWithoutInstructor() {
+        ArrayList<Integer> hashes = new ArrayList<>();
+        ArrayList<Integer> offeringIds = new ArrayList<>();
+
+        for (Booking booking : getBookings().values()) {
+            if (booking.getOffering().getInstructor() == null) {
+                hashes.add(booking.hashCode());
+                offeringIds.add(booking.getOffering().getId());
+            }
+        }
+
+        String sql = "DELETE FROM Booking WHERE O_ID = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (Integer offeringId : offeringIds) {
+                pstmt.setInt(1, offeringId);
+                pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        for (Integer hash : hashes) {
+            bookings.remove(hash);
+        }
+    }
+
     public void addBooking(Booking booking) {
         bookings.put(booking.hashCode(), booking);
     }
