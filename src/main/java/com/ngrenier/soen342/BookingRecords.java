@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -109,6 +108,81 @@ public class BookingRecords {
         }
     }
 
+    public void createBooking(Offering offering, Client client) throws IllegalStateException {
+        if (offering.getCurrentCapacity() >= offering.getMaxCapacity()) {
+            throw new IllegalStateException("Offering (" + offering.getId() + ") is at capacity.");
+        }
+
+        if (client.getAge() < 18 && client.getGuardian() == null) {
+            throw new IllegalStateException(
+                    "You (" + client.getAge() + " years old) cannot book an offering without a guardian.");
+        }
+
+        Map<Integer, Booking> clientBookings = getBookings().values().stream()
+                .filter(booking -> booking.getClient().equals(client))
+                .collect(Collectors.toMap(Booking::hashCode, booking -> booking));
+
+        if (clientBookings.values().stream()
+                .anyMatch(booking -> booking.getOffering().equals(offering))) {
+            throw new IllegalStateException("You are already booked for offering (" + offering.getId() + ").");
+        }
+
+        for (Booking booking : clientBookings.values()) {
+            if (booking.getOffering().getSchedule().getTimeSlots().equals(offering.getSchedule().getTimeSlots())) {
+                throw new IllegalStateException(
+                        "[SCHEDULE CONFLICT] You can not have multiple bookings on the same day and time slot.\n The Booking you want ("
+                                + offering.getId() + ") conflicts with a booking (" + booking.getOffering().getId()
+                                + ") you've already made.");
+            }
+        }
+
+        String sql = "INSERT INTO Booking (C_ID, O_ID) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, client.getId());
+            pstmt.setInt(2, offering.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void cancelBooking(Offering offering, Client client) {
+        Map<Integer, Booking> clientBookings = getBookings().values().stream()
+                .filter(booking -> booking.getClient().equals(client))
+                .collect(Collectors.toMap(Booking::hashCode, booking -> booking));
+
+        clientBookings.values().stream()
+                .filter(b -> b.getOffering().equals(offering))
+                .findFirst()
+                .orElseThrow(
+                        () -> new IllegalStateException("You are not booked for offering (" + offering.getId() + ")."));
+
+        String sql = "DELETE FROM Booking WHERE C_ID = ? AND O_ID = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, client.getId());
+            pstmt.setInt(2, offering.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void displayClientBookings(Client client) {
+        Map<Integer, Offering> clientOfferings = getBookings().values().stream()
+                .filter(booking -> booking.getClient().equals(client))
+                .collect(Collectors.toMap(booking -> booking.getOffering().getId(), booking -> booking.getOffering()));
+
+        if (clientOfferings.isEmpty()) {
+            throw new IllegalStateException(client.getUsername() + " has no bookings.");
+        }
+
+        offerings.displayOfferings(clientOfferings);
+    }
+
     public void clientDisplayPublicOfferings(Client client) {
         Map<Integer, Booking> clientBookings = getBookings().values().stream()
                 .filter(booking -> booking.getClient().equals(client))
@@ -117,27 +191,29 @@ public class BookingRecords {
         Map<Integer, Offering> publicOfferings = offerings.getOfferings();
         publicOfferings.values().stream()
                 .filter(offering -> offering.getInstructor() != null)
-                .forEach(offering -> {
-                    boolean isBooked = clientBookings.values().stream()
-                            .anyMatch(booking -> booking.getOffering().equals(offering));
+                .collect(Collectors.toMap(Offering::getId, offering -> offering));
 
-                    String offeringTitle = String.format(
-                            "\n%s: %s%s%s taught by %s at %s (%s) in %s, %s. Current Capacity: %d/%d",
-                            offering.getId(),
-                            isBooked ? "[UNAVAILABLE] " : "",
-                            offering.isPrivate() ? "Private " : "",
-                            offering.getLesson(),
-                            offering.getInstructor().getName(),
-                            offering.getLocation().getFacility(),
-                            offering.getLocation().getRoomName(),
-                            offering.getLocation().getCity().getName(),
-                            offering.getLocation().getCity().getProvince(),
-                            offering.getCurrentCapacity(),
-                            offering.getMaxCapacity());
-                    System.out.println(offeringTitle);
+        publicOfferings.values().stream().forEach(offering -> {
+            boolean isBooked = clientBookings.values().stream()
+                    .anyMatch(booking -> booking.getOffering().equals(offering));
 
-                    Schedule.displaySchedule(offering.getSchedule());
-                });
+            String offeringTitle = String.format(
+                    "\n%s: %s%s%s taught by %s at %s (%s) in %s, %s. Current Capacity: %d/%d",
+                    offering.getId(),
+                    isBooked ? "[UNAVAILABLE] " : "",
+                    offering.isPrivate() ? "Private " : "",
+                    offering.getLesson(),
+                    offering.getInstructor().getName(),
+                    offering.getLocation().getFacility(),
+                    offering.getLocation().getRoomName(),
+                    offering.getLocation().getCity().getName(),
+                    offering.getLocation().getCity().getProvince(),
+                    offering.getCurrentCapacity(),
+                    offering.getMaxCapacity());
+            System.out.println(offeringTitle);
+
+            Schedule.displaySchedule(offering.getSchedule());
+        });
     }
 
     public void addBooking(Booking booking) {

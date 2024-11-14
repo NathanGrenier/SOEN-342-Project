@@ -179,20 +179,4 @@ public class InstructorRecords {
     public void setInstructors(Map<Integer, Instructor> instructors) {
         this.instructors = instructors;
     }
-
-    public CityRecords getCityRecords() {
-        return cities;
-    }
-
-    public void setCityRecords(CityRecords cities) {
-        this.cities = cities;
-    }
-
-    public SpecializationRecords getSpecializationRecords() {
-        return specializations;
-    }
-
-    public void setSpecializationRecords(SpecializationRecords specializations) {
-        this.specializations = specializations;
-    }
 }
