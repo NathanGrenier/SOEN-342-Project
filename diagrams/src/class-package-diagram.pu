@@ -31,7 +31,7 @@ package Users {
         +void addInstructor(Instructor instructor)
     }
     class Instructor
-    class User {
+    abstract User {
         -int id
         -string name
         -string username
@@ -109,15 +109,15 @@ package config {
         +{static} Connection getConnection()
         +{static} void migrateDatabase()
     }
-    AdminRecords -> DatabaseConfig
-    ClientRecords -> DatabaseConfig
-    InstructorRecords -> DatabaseConfig
-    SpecializationRecords -> DatabaseConfig
-    BookingRecords -> DatabaseConfig
-    CityRecords -> DatabaseConfig
-    LocationRecords -> DatabaseConfig
-    OfferingRecords -> DatabaseConfig
-    ScheduleRecords -> DatabaseConfig
+    AdminRecords -up-> DatabaseConfig
+    ClientRecords -up-> DatabaseConfig
+    InstructorRecords -up-> DatabaseConfig
+    SpecializationRecords -left-> DatabaseConfig
+    BookingRecords -right-> DatabaseConfig
+    CityRecords -up-> DatabaseConfig
+    LocationRecords -down-> DatabaseConfig
+    OfferingRecords -down-> DatabaseConfig
+    ScheduleRecords -down-> DatabaseConfig
 }
 Main .left.> config
 Main .up.> services
