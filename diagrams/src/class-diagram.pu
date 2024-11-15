@@ -1,19 +1,17 @@
-@startuml Class Diagram
-title Class Diagram
-
-hide empty members
-skinparam linetype ortho
+@startuml
+title Package Diagram: Main with Additional Classes
 
 package Main {
-    class Terminal {
-        
-    }
+    class InstructorRecords as "Users::InstructorRecords"  {}
+    class Client as "Users::Client" {}
+    class Instructor as "Users::Instructor" {}
     class App {
-        -User currentUser
         +void login(String username, String password)
         +void logout()
-        +void registerClient(String name, String username, String password, int age, String guardianUserName)
-        +void registerInstructor(String name, String username, String password, String phone,String[] specializationNames,String[] cityNames)
+        +void registerClient(String name, String username, 
+        String password, int age, String guardianUserName)
+        +void registerInstructor(String name, String username, String password, 
+        String phone,String[] specializationNames,String[] cityNames)
         +void displayUsers(String userType)
         +void displaySpecializations()
         +void displayCities()
@@ -28,77 +26,54 @@ package Main {
         +void viewInstructorAvailableOfferings()
     }
 
-    class InstructorRecords {
-        +void fetchAllInstructors()
-        +void displayInstructors()
-        +void void deleteInstructor(String username)
-        +void addInstructor(Instructor instructor)
+    class Terminal {
+        +void displayMenu(String userType)
+        +void handleClientOperation(int operation)
+        +void handleInstructorOperation(int operation)
+        +void handleAdminOperation(int operation)
+        +void handlePublicOperation(int operation)
     }
-    class Instructor {}
-    class ClientRecords {
-        +void fetchAllClients()
-        +void displayClients()
-        +void deleteClient(String username)
-        +void updateGuardian(Client client, Client guardian)
-        +void addClient(Client client)
+
+    class Booking {
     }
-    class Client {
-        -int age
-        -int guardianId
+
+    class BookingRecords {
+        -{static} BookingRecords instance
+        +void fetchAllBookings()
+        +void createBooking(Offering offering, Client client)
+        +void cancelBooking(Offering offering, Client client)
+        +void displayClientBookings(Client client)
+        +void clientDisplayPublicOfferings(Client client)
+        +void addBooking(Booking booking)
     }
-    class RegistrationService {
-        +Client registerClient(String name, int age, String username, String password, String guardianUserName,Map<Integer, Client> clients)
-        +Instructor registerInstructor(String name, String username, String password, String phoneNumber,String[] specializationNames, String[] cityNames, InstructorRecords instructorRecords,
-            CityRecords cityRecords, SpecializationRecords specializationRecords)
-    }
-    class AuthenticationService{
-        +User login(String username, String password, Map<Integer, Client> clients,Map<Integer, Instructor> instructors,
-            Map<Integer, Admin> admins)
-        +void logout(User currentUser)
-    }   
-    class CityRecords {
-        +void fetchAllCities()
-        +City createCity(String name, String province)
-        +void displayCities() 
-        +addCity(City city)
-    }
+
     class City {
         -int id
         -string name
         -string province
     }
-    class LocationRecords {
-        +void fetchAllLocations()
+
+    class CityRecords {
+        -{static} CityRecords instance
+        +void fetchAllCities()
+        +City createCity(String name, String province)
+        +void displayCities()
+        +void addCity(City city)
     }
+
     class Location {
         -int id
         -string facility
         -string roomName
         -string type
+    }
+
+    class LocationRecords {
+        -{static} LocationRecords instance
+        +void fetchAllLocations()
         +void addLocation(Location location)
     }
 
-    class ScheduleRecords {
-        +void fetchAllSchedules()
-        +addSchedule(Schedule schedule)
-    }
-    class Schedule {
-        -int id
-        -Date startDate
-        -Date endDate
-    }
-    class TimeSlot {
-        -int id
-        -DayOfWeek day
-        -Time startTime
-        -Time endTime
-    }
-
-    class OfferingRecords {
-        +void fetchAllOfferings()
-        +void displayOfferings(Map<Integer, Offering> offerings)
-        +void addOffering(Offering offering)
-    }
     class Offering {
         -int id
         -string lesson
@@ -108,15 +83,30 @@ package Main {
         /isPrivate
     }
 
-    class BookingRecords {
-        +void fetchAllBookings()
-        +void createBooking(Offering offering, Client client)
-        +void cancelBooking(Offering offering, Client client)
-        +void displayClientBookings(Client client)
-        +void clientDisplayPublicOfferings(Client client)
-        +void addBooking(Booking booking)
+    class OfferingRecords {
+        -{static} OfferingRecords instance
+        +void fetchAllOfferings()
+        +void displayOfferings(Map<Integer, Offering> offerings)
+        +void addOffering(Offering offering)
     }
-    class Booking {
+
+    class Schedule {
+        -int id
+        -Date startDate
+        -Date endDate
+    }
+
+    class ScheduleRecords {
+        -{static} ScheduleRecords instance
+        +void fetchAllSchedules()
+        +void addSchedule(Schedule schedule)
+    }
+
+    class TimeSlot {
+        -int id
+        -DayOfWeek day
+        -Time startTime
+        -Time endTime
     }
 
     App "1" <-up- "1" Terminal
@@ -124,19 +114,17 @@ package Main {
     App --> BookingRecords
     App -> InstructorRecords
     App -> CityRecords
-    App -> AdminRecords
     App -> LocationRecords
-    App -> ClientRecords
-    App -> RegistrationService
-    App -> AuthenticationService
+    App --> ScheduleRecords
+
     InstructorRecords -> CityRecords
 
     City -* CityRecords
 
-    Location "*" --> "1" City: in
+    Location "*" -up-> "1" City: in
 
     LocationRecords --> CityRecords
-    LocationRecords *-- Location
+    LocationRecords *-up- Location
     LocationRecords <-- OfferingRecords
 
     Schedule *- TimeSlot: has
@@ -158,4 +146,5 @@ package Main {
     (Client, Offering) -- Booking
     Booking --* BookingRecords
 }
+
 @enduml

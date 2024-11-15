@@ -1,0 +1,126 @@
+@startuml
+title Package Diagram: services, config, and Users
+package Main{}
+package Users {
+    class App as "Main::App"{}
+    class Admin {
+    }
+    class AdminRecords {
+        -{static} AdminRecords instance
+        +void fetchAllAdmins()
+        +void displayAdmins()
+        +void addAdmin(Admin admin)
+    }
+    class ClientRecords {
+        -{static} ClientRecords instance
+        +void fetchAllClients()
+        +void displayClients()
+        +void deleteClient(String username)
+        +void updateGuardian(Client client, Client guardian)
+        +void addClient(Client client)
+    }
+    class Client {
+        -int age
+        -int guardianId
+    }
+    class InstructorRecords {
+        -{static} InstructorRecords instance
+        +void fetchAllInstructors()
+        +void displayInstructors()
+        +void deleteInstructor(String username)
+        +void addInstructor(Instructor instructor)
+    }
+    class Instructor
+    class User {
+        -int id
+        -string name
+        -string username
+        -string password
+    }
+    class Specialization {
+        -int id
+        -string name
+    }
+    class SpecializationRecords {
+        -{static} SpecializationRecords instance
+        +void fetchAllSpecializations()
+        +Specialization createSpecialization(String name)
+        +void displaySpecializations()
+        +void addSpecialization(Specialization specialization)
+    }
+    App --> AdminRecords
+    App --> ClientRecords
+    App -> SpecializationRecords
+
+    User <|-right- Client
+    User <|-down- Instructor
+    User <|-left- Admin
+    
+    AdminRecords *- Admin
+
+    Client "0..1" -- "1" Client: guardianOf
+
+    ClientRecords *-left- Client
+
+    SpecializationRecords *- Specialization
+    
+    Instructor "1" -- "*" Specialization: specializesIn
+
+    InstructorRecords *- Instructor
+    InstructorRecords -left-> SpecializationRecords
+}
+
+package services {
+    class App as "Main::App"
+    class RegistrationService {
+        +Client registerClient(String name, int age, String username, String password, 
+            String guardianUserName, Map<Integer, Client> clients)
+        +Instructor registerInstructor(String name, String username, String password, 
+            String phoneNumber, String[] specializationNames, String[] cityNames, 
+            InstructorRecords instructorRecords, CityRecords cityRecords, 
+            SpecializationRecords specializationRecords)
+    }
+    class AuthenticationService {
+        +User login(String username, String password, 
+            Map<Integer, Client> clients, Map<Integer, Instructor> instructors,
+            Map<Integer, Admin> admins)
+        +void logout(User currentUser)
+    }
+    App -> RegistrationService
+    App -> AuthenticationService
+}
+
+package config {
+    class AdminRecords as "Users::AdminRecords"{}
+    class ClientRecords as "Users::ClientRecords"{}
+    class InstructorRecords as "Users::InstructorRecords"{}
+    class SpecializationRecords as "Users::SpecializationRecords"{}
+    class BookingRecords as "Main::BookingRecords"{}
+    class CityRecords as "Main::CityRecords"{}
+    class LocationRecords as "Main::LocationRecords"{}
+    class OfferingRecords as "Main::OfferingRecords"{}
+    class ScheduleRecords as "Main::ScheduleRecords"{}
+    class DatabaseConfig {
+        -{static} Properties flywayProps
+        -{static} String URL
+        -{static} String USER
+        -{static} String PASSWORD
+        -{static} Properties loadFlywayProperties()
+        +{static} Connection getConnection()
+        +{static} void migrateDatabase()
+    }
+    AdminRecords -> DatabaseConfig
+    ClientRecords -> DatabaseConfig
+    InstructorRecords -> DatabaseConfig
+    SpecializationRecords -> DatabaseConfig
+    BookingRecords -> DatabaseConfig
+    CityRecords -> DatabaseConfig
+    LocationRecords -> DatabaseConfig
+    OfferingRecords -> DatabaseConfig
+    ScheduleRecords -> DatabaseConfig
+}
+Main .left.> config
+Main .up.> services
+Main .down.> Users
+
+@enduml
