@@ -56,6 +56,15 @@ public class LocationRecords {
         }
     }
 
+    public void displayLocations() {
+        getLocations();
+        System.out.println("\nLocations:");
+        for (Location location : locations.values()) {
+            System.out.println(
+                    "- " + location.getId() + ": " + location.getFacility() + " (" + location.getRoomName() + ")");
+        }
+    }
+
     public void addLocation(Location location) {
         locations.put(location.getId(), location);
     }

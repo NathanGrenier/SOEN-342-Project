@@ -1,6 +1,7 @@
 package com.ngrenier.soen342;
 
 import java.sql.Time;
+import java.util.Objects;
 
 enum DayOfWeek {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
@@ -28,12 +29,14 @@ public class TimeSlot {
             return false;
         }
         TimeSlot timeSlot = (TimeSlot) obj;
-        return day == timeSlot.day && startTime.equals(timeSlot.startTime) && endTime.equals(timeSlot.endTime);
+        return day.toString().equals(timeSlot.day.toString()) &&
+                startTime.toString().equals(timeSlot.startTime.toString()) &&
+                endTime.toString().equals(timeSlot.endTime.toString());
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(id);
+        return Objects.hash(day.toString(), startTime.toString(), endTime.toString());
     }
 
     public int getId() {
