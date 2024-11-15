@@ -3,16 +3,10 @@ title System Sequence Diagram: Offering Creation
 
 actor Admin
 participant System
-
+Admin -> System: login(username,password)
+System --> Admin: confirmation message
 Admin -> System: adminCreateOffering(Lesson, LocationId, TimeSlots, Capacity, IsPrivate, StartDate, EndDate)
-System -> System: validateLocation(LocationId)
-System -> System: validateDates(StartDate, EndDate)
-System -> System: validateTimeSlots(TimeSlots)
-System -> System: checkForConflicts(LocationId, TimeSlots, StartDate, EndDate)
 alt All validations pass
-    System -> System: createSchedule(StartDate, EndDate, TimeSlots)
-    System -> System: createOffering(Lesson, LocationId, Schedule, Capacity, IsPrivate)
-    System -> System: saveOfferingToRecords(Offering)
     System --> Admin: Confirmation message
 else Validation fails
     System --> Admin: Error message
