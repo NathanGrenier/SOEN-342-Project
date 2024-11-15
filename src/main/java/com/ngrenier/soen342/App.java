@@ -1,5 +1,12 @@
 package com.ngrenier.soen342;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.List;
+import java.sql.Date;
+
 import com.ngrenier.soen342.services.AuthenticationService;
 import com.ngrenier.soen342.services.RegistrationService;
 
@@ -13,10 +20,6 @@ import com.ngrenier.soen342.users.Specialization;
 import com.ngrenier.soen342.users.SpecializationRecords;
 import com.ngrenier.soen342.users.User;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class App {
     private AuthenticationService authService = AuthenticationService.getInstance();
     private RegistrationService registrationService = RegistrationService.getInstance();
@@ -26,9 +29,11 @@ public class App {
     private ClientRecords clientRecords = ClientRecords.getInstance();
     private InstructorRecords instructorRecords = InstructorRecords.getInstance();
 
-    private SpecializationRecords specializationRecords = SpecializationRecords.getInstance();
     private CityRecords cityRecords = CityRecords.getInstance();
     private LocationRecords locationRecords = LocationRecords.getInstance();
+
+    private SpecializationRecords specializationRecords = SpecializationRecords.getInstance();
+    private ScheduleRecords scheduleRecords = ScheduleRecords.getInstance();
 
     private OfferingRecords offeringRecords = OfferingRecords.getInstance();
     private BookingRecords bookingRecords = BookingRecords.getInstance();
@@ -122,14 +127,6 @@ public class App {
         cityRecords.displayCities();
     }
 
-    public void clientViewPublicOfferings() {
-        if (currentUser instanceof Client) {
-            bookingRecords.clientDisplayPublicOfferings((Client) currentUser);
-        } else {
-            throw new IllegalStateException("User must be a client to view their annotated offerings.");
-        }
-    }
-
     public void createBooking(int offeringId) throws IllegalStateException {
         if (currentUser instanceof Client) {
             Offering offering = offeringRecords.getOfferings().get(offeringId);
@@ -214,6 +211,100 @@ public class App {
         }
     }
 
+    public void displayLocations() {
+        locationRecords.displayLocations();
+    }
+
+    public void clientViewPublicOfferings() {
+        if (currentUser instanceof Client) {
+            bookingRecords.clientDisplayPublicOfferings((Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be a client to view their annotated offerings.");
+        }
+    }
+
+    public int viewInstructorAvailableOfferings() {
+        if (currentUser instanceof Instructor) {
+            Instructor instructor = (Instructor) currentUser;
+            HashMap<Integer, City> instructorCities = instructor.getCities();
+            HashMap<Integer, Specialization> instructorSpecializations = instructor.getSpecializations();
+            Map<Integer, Offering> unpublishedOfferings = offeringRecords.getOfferings();
+
+            unpublishedOfferings = unpublishedOfferings.entrySet().stream()
+                    .filter(entry -> entry.getValue().getInstructor() == null)
+                    .filter(entry -> instructorCities.values().contains(entry.getValue().getLocation().getCity()))
+                    .filter(entry -> instructorSpecializations.values().stream()
+                            .anyMatch(
+                                    specialization -> entry.getValue().getLesson().contains(specialization.getName())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            return (offeringRecords.displayOfferings(unpublishedOfferings));
+        } else {
+            throw new IllegalStateException("User must be an instructor to view their offerings.");
+        }
+    }
+
+    public void instructorViewAllOfferings() {
+        if (currentUser instanceof Instructor) {
+            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings().values().stream()
+                    .filter(offering -> offering.getInstructor() == null)
+                    .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
+            offeringRecords.displayOfferings(publicOfferings);
+        } else {
+            throw new IllegalStateException("User must be an instructor to view all offerings.");
+        }
+    }
+
+    public void adminViewOfferings() {
+        if (currentUser instanceof Admin) {
+            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
+
+            offeringRecords.displayOfferings(publicOfferings);
+        } else {
+            throw new IllegalStateException("User must be an Admin to view all offerings.");
+        }
+    }
+
+    public void publicViewOfferings() {
+        Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
+        publicOfferings = publicOfferings.values().stream().filter(offering -> offering.getInstructor() != null)
+                .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
+        offeringRecords.displayOfferings(publicOfferings);
+    }
+
+    public void acceptInstructorLesson(int offeringId) throws IllegalStateException {
+        Offering selectedOffering = offeringRecords.getOfferings().get(offeringId);
+
+        if (selectedOffering == null) {
+            throw new IllegalStateException("Offering with ID '" + offeringId + "' does not exist.");
+        }
+
+        if (selectedOffering.getInstructor() != null) {
+            throw new IllegalStateException("Offering with ID '" + offeringId + "' already has an instructor.");
+        }
+
+        offeringRecords.updateOfferingInstructor((Instructor) currentUser, selectedOffering);
+    }
+
+    public void adminCreateOffering(String lesson, int locationId, List<String> timeSlots, int maxCapacity,
+            LocalDate startDate, LocalDate endDate) throws IllegalStateException {
+
+        Location location = locationRecords.getLocations().get(locationId);
+        if (location == null) {
+            throw new IllegalStateException("[ERROR] Location with ID " + locationId + " not found.");
+        }
+
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalStateException("[ERROR] End date cannot be before start date.");
+        }
+
+        Date startDateSql = Date.valueOf(startDate);
+        Date endDateSql = Date.valueOf(endDate);
+
+        offeringRecords.createOffering(lesson, maxCapacity, location, startDateSql, endDateSql, timeSlots,
+                scheduleRecords);
+    }
+
     public void deleteUser(String userType, String username) {
         switch (userType) {
             case "I":
@@ -225,25 +316,6 @@ public class App {
                 break;
             default:
                 System.out.println("Invalid user type.");
-        }
-    }
-
-    public void viewInstructorAvailableOfferings() {
-
-        if (currentUser instanceof Instructor) {
-            Instructor instructor = (Instructor) currentUser;
-            HashMap<Integer, City> availableCities = instructor.getCities();
-            HashMap<Integer, Specialization> instructorSpecializations = instructor.getSpecializations();
-            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
-            publicOfferings = publicOfferings.values().stream()
-                    .filter(offering -> offering.getInstructor() == null)
-                    .filter(offering -> availableCities.values().contains(offering.getLocation().getCity()))
-                    .filter(offering -> instructorSpecializations.values().stream()
-                            .anyMatch(spec -> offering.getLesson().contains(spec.getName())))
-                    .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
-            offeringRecords.displayOfferings(publicOfferings);
-        } else {
-            throw new IllegalStateException("User must be an instructor to view their offerings.");
         }
     }
 
@@ -268,4 +340,5 @@ public class App {
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
+
 }
