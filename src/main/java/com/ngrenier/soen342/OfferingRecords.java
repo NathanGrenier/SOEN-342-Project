@@ -1,11 +1,15 @@
 package com.ngrenier.soen342;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import com.ngrenier.soen342.config.DatabaseConfig;
@@ -92,7 +96,12 @@ public class OfferingRecords {
         pruneDeletedOfferings(offeringIds);
     }
 
-    public void displayOfferings(Map<Integer, Offering> offerings) {
+    public int displayOfferings(Map<Integer, Offering> offerings) {
+        if (offerings.size() == 0) {
+            System.out.println("No offerings to display.");
+            return offerings.size();
+        }
+
         offerings.values().stream().forEach(offering -> {
             String offeringTitle = String.format(
                     "\n%s: %s%s at %s (%s) in %s, %s. Current Capacity: %d/%d",
@@ -109,10 +118,62 @@ public class OfferingRecords {
 
             Schedule.displaySchedule(offering.getSchedule());
         });
+
+        return offerings.size();
     }
 
-    public void addOffering(Offering offering) {
-        offerings.put(offering.getId(), offering);
+    public void createOffering(String lesson, int maxCapacity, Location location, Date startDate, Date endDate,
+            List<String> timeSlots, ScheduleRecords scheduleRecords) throws IllegalStateException {
+
+        // Create TimeSlots and Schedule
+        int scheduleId = scheduleRecords.createSchedule(startDate, endDate, timeSlots);
+        Schedule newSchedule = scheduleRecords.getSchedules().get(scheduleId);
+
+        // Validate that no existing offerings at the same location have overlapping
+        // time slots
+        for (Offering existingOffering : getOfferings().values()) {
+            if (existingOffering.getLocation().equals(location)) {
+                Collection<TimeSlot> existingSlots = existingOffering.getSchedule().getTimeSlots().values();
+                Collection<TimeSlot> newSlots = newSchedule.getTimeSlots().values();
+
+                // Convert to sets to ignore order
+                if (new HashSet<>(existingSlots).equals(new HashSet<>(newSlots))) {
+                    scheduleRecords.deleteSchedule(scheduleId);
+                    throw new IllegalStateException(
+                            "[ERROR] The new offering's time slots overlap with an existing offering at the same location.");
+                }
+            }
+        }
+
+        // Create Offering
+        String sql = "INSERT INTO Offering (O_LESSON, O_MAX_CAPACITY, O_CURRENT_CAPACITY, I_ID, L_ID, SC_ID) VALUES (?, ?, 0, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, lesson);
+            pstmt.setInt(2, maxCapacity);
+            pstmt.setNull(3, java.sql.Types.INTEGER);
+            pstmt.setInt(4, location.getId());
+            pstmt.setInt(5, scheduleId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updateOfferingInstructor(Instructor instructor, Offering offering) {
+        String sql = "UPDATE Offering SET I_ID = ? WHERE O_ID = ?";
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, instructor.getId());
+            pstmt.setInt(2, offering.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Failed to update the offering in the database.");
+        }
+
+        // Assign the instructor to the offering
+        offering.setInstructor(instructor);
     }
 
     public Map<Integer, Offering> getOfferings() {

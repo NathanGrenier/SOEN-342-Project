@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.ngrenier.soen342.config.DatabaseConfig;
@@ -51,23 +52,114 @@ public class ScheduleRecords {
                 int timeSlotId = rs.getInt("TS_ID");
                 Map<Integer, TimeSlot> timeSlots = schedule.getTimeSlots();
 
-                DayOfWeek day = DayOfWeek.valueOf(rs.getString("TS_DAY").toUpperCase());
-                Time startTime = rs.getTime("TS_START_TIME");
-                Time endTime = rs.getTime("TS_END_TIME");
+                String dayString = rs.getString("TS_DAY");
+                if (dayString != null) {
+                    DayOfWeek day = DayOfWeek.valueOf(dayString.toUpperCase());
+                    Time startTime = rs.getTime("TS_START_TIME");
+                    Time endTime = rs.getTime("TS_END_TIME");
 
-                if (!timeSlots.containsKey(timeSlotId)) {
-                    TimeSlot newTimeSlot = new TimeSlot(timeSlotId, day, startTime, endTime);
-                    timeSlots.put(timeSlotId, newTimeSlot);
-                } else {
-                    TimeSlot timeSlot = timeSlots.get(timeSlotId);
-                    timeSlot.setDay(day);
-                    timeSlot.setStartTime(startTime);
-                    timeSlot.setEndTime(endTime);
+                    if (!timeSlots.containsKey(timeSlotId)) {
+                        TimeSlot newTimeSlot = new TimeSlot(timeSlotId, day, startTime, endTime);
+                        timeSlots.put(timeSlotId, newTimeSlot);
+                    }
                 }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching schedules: " + e.getMessage());
+        }
+    }
+
+    public int createSchedule(Date startDate, Date endDate, List<String> timeSlots) {
+        int[] timeSlotIds = createTimeSlots(timeSlots);
+
+        String sql = "INSERT INTO Schedule (SC_START_DATE, SC_END_DATE) VALUES (?, ?) RETURNING SC_ID";
+
+        int scheduleId = 0;
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, startDate);
+            pstmt.setDate(2, endDate);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                scheduleId = rs.getInt("SC_ID");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        // Set the timeslot's schedule ids to the new schedule's id
+        String updateSql = "UPDATE time_slot SET SC_ID = ? WHERE TS_ID = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
+            for (int timeSlotId : timeSlotIds) {
+                pstmt.setInt(1, scheduleId);
+                pstmt.setInt(2, timeSlotId);
+                pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return scheduleId;
+    }
+
+    public int[] createTimeSlots(List<String> timeSlots) {
+
+        String sql = "INSERT INTO time_slot (TS_DAY, TS_START_TIME, TS_END_TIME, SC_ID) VALUES (?, ?, ?, ?) RETURNING TS_ID";
+
+        int[] timeSlotIds = new int[timeSlots.size()];
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                int index = 0;
+                for (String timeSlot : timeSlots) {
+                    String[] parts = timeSlot.split(",");
+                    String day = parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1).toLowerCase();
+                    Time startTime = Time.valueOf(parts[1] + ":00");
+                    Time endTime = Time.valueOf(parts[2] + ":00");
+
+                    pstmt.setObject(1, day, java.sql.Types.OTHER);
+                    pstmt.setTime(2, startTime);
+                    pstmt.setTime(3, endTime);
+                    pstmt.setNull(4, java.sql.Types.INTEGER);
+
+                    // Execute each insert individually and get its returned ID
+                    ResultSet rs = pstmt.executeQuery();
+                    if (rs.next()) {
+                        timeSlotIds[index++] = rs.getInt(1);
+                    }
+                    rs.close();
+                }
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error creating time slots: " + e.getMessage());
+        }
+        return timeSlotIds;
+    }
+
+    public void deleteSchedule(int scheduleId) {
+        String sql = "DELETE FROM Schedule WHERE SC_ID = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, scheduleId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        schedules.remove(scheduleId);
     }
 
     public void addSchedule(Schedule schedule) {
