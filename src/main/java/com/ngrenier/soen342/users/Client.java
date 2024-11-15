@@ -2,10 +2,10 @@ package com.ngrenier.soen342.users;
 
 public class Client extends User {
     private int age;
-    private int guardianId;
+    private Integer guardianId;
     private Client guardian;
 
-    public Client(int id, String name, String username, String password, int age, int guardianId, Client guardian) {
+    public Client(int id, String name, String username, String password, int age, Integer guardianId, Client guardian) {
         super(id, name, username, password);
 
         this.age = age;

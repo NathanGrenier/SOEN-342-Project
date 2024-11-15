@@ -1,0 +1,28 @@
+@startuml Sequence Diagram for Creating an Offering
+title Sequence Diagram for Creating an Offering
+
+actor Admin
+participant Terminal
+participant App
+participant Offering
+activate Terminal
+Admin -> Terminal: createOffering(lesson, location, times[])
+activate App
+Terminal -> App: createOffering(lesson, location, times[])
+App -> App: validate(lesson, location, times[])
+
+alt Success
+    App -> Schedule ** : create(TimeSlots[]) 
+    loop For each time in times[]
+        App -> TimeSlot ** : create(time) 
+    end
+    App -> Lesson ** : create(lesson)
+    App -> Offering ** : create(Location, Lesson, Schedule)
+else Error
+    App --> Terminal: Validation error message
+end
+deactivate App
+
+Terminal --> Admin: Status message
+deactivate Terminal
+@enduml

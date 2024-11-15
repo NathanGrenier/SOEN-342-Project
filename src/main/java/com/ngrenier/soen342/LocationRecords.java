@@ -23,7 +23,7 @@ public class LocationRecords {
     }
 
     public void fetchAllLocations() {
-        cities.fetchAllCities();
+        Map<Integer, City> cityMap = cities.getCities();
 
         String sql = "SELECT * FROM Location";
 
@@ -39,10 +39,16 @@ public class LocationRecords {
                 int locationCityId = rs.getInt("CI_ID");
 
                 if (!locations.containsKey(locationId)) {
-                    City city = cities.getCityById(locationCityId);
+                    City city = cityMap.get(locationCityId);
                     Location location = new Location(locationId, locationFacility, locationRoomName, locationType,
                             city);
                     addLocation(location);
+                } else {
+                    Location location = locations.get(locationId);
+                    location.setFacility(locationFacility);
+                    location.setRoomName(locationRoomName);
+                    location.setType(locationType);
+                    location.setCity(cityMap.get(locationCityId));
                 }
             }
         } catch (SQLException e) {
@@ -52,10 +58,6 @@ public class LocationRecords {
 
     public void addLocation(Location location) {
         locations.put(location.getId(), location);
-    }
-
-    public Location getLocationById(int id) {
-        return locations.get(id);
     }
 
     public Map<Integer, Location> getLocations() {
