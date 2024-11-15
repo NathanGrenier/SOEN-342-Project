@@ -1,10 +1,6 @@
 package com.ngrenier.soen342;
 
-import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,11 +20,6 @@ import com.ngrenier.soen342.users.Specialization;
 import com.ngrenier.soen342.users.SpecializationRecords;
 import com.ngrenier.soen342.users.User;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-
 public class App {
     private AuthenticationService authService = AuthenticationService.getInstance();
     private RegistrationService registrationService = RegistrationService.getInstance();
@@ -37,10 +28,12 @@ public class App {
     private AdminRecords adminRecords = AdminRecords.getInstance();
     private ClientRecords clientRecords = ClientRecords.getInstance();
     private InstructorRecords instructorRecords = InstructorRecords.getInstance();
-    private LocationRecords locationRecords = LocationRecords.getInstance();
-    private SpecializationRecords specializationRecords = SpecializationRecords.getInstance();
-    private CityRecords cityRecords = CityRecords.getInstance();
 
+    private CityRecords cityRecords = CityRecords.getInstance();
+    private LocationRecords locationRecords = LocationRecords.getInstance();
+
+    private SpecializationRecords specializationRecords = SpecializationRecords.getInstance();
+    private ScheduleRecords scheduleRecords = ScheduleRecords.getInstance();
 
     private OfferingRecords offeringRecords = OfferingRecords.getInstance();
     private BookingRecords bookingRecords = BookingRecords.getInstance();
@@ -129,6 +122,7 @@ public class App {
     public void displaySpecializations() {
         specializationRecords.displaySpecializations();
     }
+
     public void displayCities() {
         cityRecords.displayCities();
     }
@@ -216,9 +210,11 @@ public class App {
             throw new IllegalStateException("User must be a client to view their guardian.");
         }
     }
+
     public void displayLocations() {
         locationRecords.displayLocations();
     }
+
     public void clientViewPublicOfferings() {
         if (currentUser instanceof Client) {
             bookingRecords.clientDisplayPublicOfferings((Client) currentUser);
@@ -226,49 +222,57 @@ public class App {
             throw new IllegalStateException("User must be a client to view their annotated offerings.");
         }
     }
-    public int viewInstructorAvailableOfferings(){
-        
+
+    public int viewInstructorAvailableOfferings() {
         if (currentUser instanceof Instructor) {
             Instructor instructor = (Instructor) currentUser;
-            HashMap<Integer,City> availableCities = instructor.getCities();
-            HashMap<Integer,Specialization> instructorSpecializations = instructor.getSpecializations();
-            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
-            publicOfferings = publicOfferings.values().stream()
-                .filter(offering -> offering.getInstructor() == null)
-                .filter(offering -> availableCities.values().contains(offering.getLocation().getCity()))
-                .filter(offering -> instructorSpecializations.values().stream()
-                .anyMatch(spec -> offering.getLesson().contains(spec.getName()))).collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
-            return (offeringRecords.displayOfferings(publicOfferings));
-            
+            HashMap<Integer, City> instructorCities = instructor.getCities();
+            HashMap<Integer, Specialization> instructorSpecializations = instructor.getSpecializations();
+            Map<Integer, Offering> unpublishedOfferings = offeringRecords.getOfferings();
+
+            unpublishedOfferings = unpublishedOfferings.entrySet().stream()
+                    .filter(entry -> entry.getValue().getInstructor() == null)
+                    .filter(entry -> instructorCities.values().contains(entry.getValue().getLocation().getCity()))
+                    .filter(entry -> instructorSpecializations.values().stream()
+                            .anyMatch(
+                                    specialization -> entry.getValue().getLesson().contains(specialization.getName())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            return (offeringRecords.displayOfferings(unpublishedOfferings));
         } else {
             throw new IllegalStateException("User must be an instructor to view their offerings.");
         }
     }
+
     public void instructorViewAllOfferings() {
         if (currentUser instanceof Instructor) {
-            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
+            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings().values().stream()
+                    .filter(offering -> offering.getInstructor() == null)
+                    .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
             offeringRecords.displayOfferings(publicOfferings);
         } else {
             throw new IllegalStateException("User must be an instructor to view all offerings.");
         }
     }
+
     public void adminViewOfferings() {
         if (currentUser instanceof Admin) {
             Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
+
             offeringRecords.displayOfferings(publicOfferings);
         } else {
             throw new IllegalStateException("User must be an Admin to view all offerings.");
         }
     }
-    public void publicViewOfferings(){
+
+    public void publicViewOfferings() {
         Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
-        publicOfferings = publicOfferings.values().stream()
-                .filter(offering -> offering.getCurrentCapacity() < offering.getMaxCapacity())
+        publicOfferings = publicOfferings.values().stream().filter(offering -> offering.getInstructor() != null)
                 .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
         offeringRecords.displayOfferings(publicOfferings);
     }
-    public void acceptInstructorLesson(int offeringId) {
-        // Retrieve the offering from the in-memory collection
+
+    public void acceptInstructorLesson(int offeringId) throws IllegalStateException {
         Offering selectedOffering = offeringRecords.getOfferings().get(offeringId);
 
         if (selectedOffering == null) {
@@ -279,71 +283,28 @@ public class App {
             throw new IllegalStateException("Offering with ID '" + offeringId + "' already has an instructor.");
         }
 
-        // Assign the instructor to the offering
-        selectedOffering.setInstructor((Instructor) currentUser);
-
-        // Update the database
-        offeringRecords.updateOfferingInstructor((Instructor) currentUser,offeringId);
-
-        System.out.println("Instructor " + currentUser.getName() + " has been successfully assigned to Offering ID: " + offeringId);
+        offeringRecords.updateOfferingInstructor((Instructor) currentUser, selectedOffering);
     }
-   
-    public void adminCreateOffering(String lesson, int locationId, List<String> timeSlots, int capacity, boolean isPrivate,
-                                String startDateString, String endDateString) {
-    try {
-        Location location = LocationRecords.getInstance().getLocations().get(locationId);
+
+    public void adminCreateOffering(String lesson, int locationId, List<String> timeSlots, int maxCapacity,
+            LocalDate startDate, LocalDate endDate) throws IllegalStateException {
+
+        Location location = locationRecords.getLocations().get(locationId);
         if (location == null) {
-            throw new IllegalArgumentException("Location with ID " + locationId + " not found.");
+            throw new IllegalStateException("[ERROR] Location with ID " + locationId + " not found.");
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate startLocalDate = LocalDate.parse(startDateString, formatter);
-        LocalDate endLocalDate = LocalDate.parse(endDateString, formatter);
-
-        if (endLocalDate.isBefore(startLocalDate)) {
-            throw new IllegalArgumentException("End date cannot be before start date.");
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalStateException("[ERROR] End date cannot be before start date.");
         }
 
-        Date startDate = Date.valueOf(startLocalDate);
-        Date endDate = Date.valueOf(endLocalDate);
+        Date startDateSql = Date.valueOf(startDate);
+        Date endDateSql = Date.valueOf(endDate);
 
-        Map<Integer, TimeSlot> timeSlotMap = new HashMap<>();
-        int timeSlotId = 1;
-        for (String timeSlotInfo : timeSlots) {
-            String[] parts = timeSlotInfo.split(",");
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Invalid time slot format. Expected: DAY,HH:mm,HH:mm");
-            }
-
-            // Use DayOfWeek enum directly without converting to String
-            DayOfWeek day = DayOfWeek.valueOf(parts[0].toUpperCase());
-            Time startTime = Time.valueOf(parts[1] + ":00");
-            Time endTime = Time.valueOf(parts[2] + ":00");
-
-            // Add the TimeSlot to the map
-            timeSlotMap.put(timeSlotId, new TimeSlot(timeSlotId, day, startTime, endTime));
-            timeSlotId++;
-        }
-
-        // Create a new Schedule object
-        Schedule schedule = new Schedule(0, startDate, endDate, timeSlotMap);
-
-        // Save schedule to the database and get its ID
-        int scheduleId = ScheduleRecords.getInstance().saveScheduleToDatabase(schedule);
-        schedule.setId(scheduleId);
-
-        // Create and save the Offering
-        Offering offering = offeringRecords.newOffering(lesson, location, schedule, capacity, isPrivate);
-        boolean success = offeringRecords.addOffering(offering);
-        if (!success) {
-            throw new IllegalStateException("Failed to save the offering to the database.");
-        }
-
-        System.out.println("Offering successfully created.");
-    } catch (Exception e) {
-        System.out.println("Error creating offering: " + e.getMessage());
+        offeringRecords.createOffering(lesson, maxCapacity, location, startDateSql, endDateSql, timeSlots,
+                scheduleRecords);
     }
-}
+
     public void deleteUser(String userType, String username) {
         switch (userType) {
             case "I":

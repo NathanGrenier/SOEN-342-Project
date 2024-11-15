@@ -5,17 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.ngrenier.soen342.config.DatabaseConfig;
 import com.ngrenier.soen342.users.Client;
 import com.ngrenier.soen342.users.ClientRecords;
-import com.ngrenier.soen342.users.Instructor;
-import com.ngrenier.soen342.users.Specialization;
 
 public class BookingRecords {
     private Map<Integer, Booking> bookings = new HashMap<>();
@@ -111,6 +109,7 @@ public class BookingRecords {
             bookings.remove(hash);
         }
     }
+
     public void createBooking(Offering offering, Client client) throws IllegalStateException {
         if (offering.getCurrentCapacity() >= offering.getMaxCapacity()) {
             throw new IllegalStateException("Offering (" + offering.getId() + ") is at capacity.");
@@ -131,7 +130,10 @@ public class BookingRecords {
         }
 
         for (Booking booking : clientBookings.values()) {
-            if (booking.getOffering().getSchedule().getTimeSlots().equals(offering.getSchedule().getTimeSlots())) {
+            Collection<TimeSlot> bookingTimeSlots = booking.getOffering().getSchedule().getTimeSlots().values();
+            Collection<TimeSlot> offeringTimeSlots = offering.getSchedule().getTimeSlots().values();
+
+            if (new HashSet<>(bookingTimeSlots).equals(new HashSet<>(offeringTimeSlots))) {
                 throw new IllegalStateException(
                         "[SCHEDULE CONFLICT] You can not have multiple bookings on the same day and time slot.\n The Booking you want ("
                                 + offering.getId() + ") conflicts with a booking (" + booking.getOffering().getId()
@@ -185,13 +187,13 @@ public class BookingRecords {
 
         offerings.displayOfferings(clientOfferings);
     }
+
     public void clientDisplayPublicOfferings(Client client) {
         Map<Integer, Booking> clientBookings = getBookings().values().stream()
                 .filter(booking -> booking.getClient().equals(client))
                 .collect(Collectors.toMap(Booking::hashCode, booking -> booking));
 
-        Map<Integer, Offering> publicOfferings = offerings.getOfferings();
-        publicOfferings.values().stream()
+        Map<Integer, Offering> publicOfferings = offerings.getOfferings().values().stream()
                 .filter(offering -> offering.getInstructor() != null)
                 .collect(Collectors.toMap(Offering::getId, offering -> offering));
 

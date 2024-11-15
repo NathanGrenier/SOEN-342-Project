@@ -65,7 +65,7 @@ public class SpecializationRecords {
 
     public void displaySpecializations() {
         fetchAllSpecializations();
-        System.out.println("Specializations:");
+        System.out.println("\nSpecializations:");
         for (Specialization specialization : specializations.values()) {
             System.out.println("- " + specialization.getName());
         }

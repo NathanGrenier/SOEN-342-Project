@@ -56,6 +56,15 @@ public class LocationRecords {
         }
     }
 
+    public void displayLocations() {
+        getLocations();
+        System.out.println("\nLocations:");
+        for (Location location : locations.values()) {
+            System.out.println(
+                    "- " + location.getId() + ": " + location.getFacility() + " (" + location.getRoomName() + ")");
+        }
+    }
+
     public void addLocation(Location location) {
         locations.put(location.getId(), location);
     }
@@ -67,12 +76,5 @@ public class LocationRecords {
 
     public void setLocations(Map<Integer, Location> locations) {
         this.locations = locations;
-    }
-    public void displayLocations() {
-        fetchAllLocations();
-        System.out.println("Locations:");
-        for (Location location : locations.values()) {
-            System.out.println(location.getId()+": " + location.getFacility() + " (" + location.getRoomName() + ")");
-        }
     }
 }

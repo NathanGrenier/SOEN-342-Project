@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class Terminal {
     static App app = new App();
@@ -147,7 +149,6 @@ public class Terminal {
                 app.viewClientBookings();
                 break;
             case 4:
-
                 app.viewClientBookings();
                 System.out.println("Enter the id of the booking you would like to cancel: ");
                 while (!scanner.hasNextInt()) {
@@ -201,26 +202,30 @@ public class Terminal {
                 app.instructorViewAllOfferings();
                 break;
             case 2:
-            while (true) {
                 int count = app.viewInstructorAvailableOfferings();
-                if (count<=0)break;
-                System.out.print("Enter the Offering ID to accept: ");
-                int offeringId = 0;
-                if (scanner.hasNextInt()) {
-                    offeringId = scanner.nextInt();
-                    scanner.nextLine();
-                } else {
-                    System.out.println("Invalid id. Please try again.");
-                    scanner.nextLine();
-                    continue;
+                if (count <= 0) {
+                    break;
+                }
+                int offeringId;
+                while (true) {
+                    System.out.print("Enter the Offering ID to accept: ");
+                    if (scanner.hasNextInt()) {
+                        offeringId = scanner.nextInt();
+                        scanner.nextLine();
+                        break;
+                    } else {
+                        System.out.println("Invalid id. Please try again.");
+                        app.viewInstructorAvailableOfferings();
+                        scanner.next();
+                    }
                 }
                 try {
                     app.acceptInstructorLesson(offeringId);
+                    System.out.println("Offering (" + offeringId + ") accepted successfully.");
                     break;
                 } catch (IllegalStateException e) {
                     System.out.println(e.getMessage());
                 }
-            }
                 break;
             case 0:
                 try {
@@ -236,6 +241,15 @@ public class Terminal {
     }
 
     public static void handleAdminOperation(int operation) {
+        // System.out.println("\n=== Select an Option Below by Entering its Number
+        // ===");
+        // System.out.println("1. View Bookings");
+        // System.out.println("2. View Offerings");
+        // System.out.println("3. Create New Offerings");
+        // System.out.println("4. View Accounts...");
+        // System.out.println("5. Delete User Account");
+        // System.out.println("0. Logout");
+
         String accountType;
         switch (operation) {
             case 1:
@@ -254,11 +268,10 @@ public class Terminal {
                 break;
             case 3:
                 System.out.println("\n=== Select a Location from the following ===");
-                app.displayLocations();
-                int location = 0;
+                int location;
                 while (true) {
+                    app.displayLocations();
                     System.out.print("Enter the Location ID: ");
-                    
                     if (scanner.hasNextInt()) {
                         location = scanner.nextInt();
                         scanner.nextLine();
@@ -269,42 +282,82 @@ public class Terminal {
                         continue;
                     }
                 }
+                app.displaySpecializations();
                 System.out.print("Type the kind of Lesson: ");
                 String lesson = scanner.nextLine();
-                System.out.print("Enter the capacity: ");
-                int capacity = scanner.nextInt();
-                scanner.nextLine();
-                boolean isPrivate = false;
-                while (true){
-                    if (capacity>1){
-                        break;
-                    } else if (capacity == 1){
-                        isPrivate = true;
+                int maxCapacity;
+                while (true) {
+                    System.out.print("Enter the max capacity: ");
+                    if (scanner.hasNextInt()) {
+                        maxCapacity = scanner.nextInt();
+                        if (maxCapacity <= 0) {
+                            System.out.println("Max capacity must be greater than 0. Please try again.");
+                            continue;
+                        }
+                        scanner.nextLine();
                         break;
                     } else {
-                        System.out.println("Invalid number. Please try again.");
-                        scanner.nextLine();
-                        continue;
+                        System.out.println("Max capacity must be an int. Please try again.");
+                        scanner.next();
                     }
                 }
-                System.out.print("Enter the Start Date (yyyy-MM-dd): ");
-                String startDate = scanner.nextLine();
+                LocalDate start;
+                while (true) {
+                    System.out.print("Enter the Start Date (yyyy-MM-dd): ");
+                    String startDate = scanner.nextLine();
+                    try {
+                        start = LocalDate.parse(startDate);
+                        break;
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
+                    }
+                }
 
-                System.out.print("Enter the End Date (yyyy-MM-dd): ");
-                String endDate = scanner.nextLine();
+                LocalDate end;
+                while (true) {
+                    System.out.print("Enter the End Date (yyyy-MM-dd): ");
+                    String endDate = scanner.nextLine();
+                    try {
+                        end = LocalDate.parse(endDate);
+                        break;
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
+                        endDate = scanner.nextLine();
+                    }
+                }
 
-                // Collect time slots
                 List<String> timeSlots = new ArrayList<>();
                 while (true) {
-                    System.out.print("Enter Time Slot (DAY,HH:mm,HH:mm) or type 'done' to finish: ");
+                    System.out.print(
+                            "Enter Time Slot (DAY,HH:mm,HH:mm) [24 hour format]. Press Enter to finish: ");
                     String input = scanner.nextLine();
-                    if (input.equalsIgnoreCase("done")) {
+                    if (input.equalsIgnoreCase("")) {
+                        if (timeSlots.size() == 0) {
+                            System.out.println(
+                                    "At least one time slot is required.");
+                            continue;
+                        }
                         break;
                     }
-                    timeSlots.add(input);
+                    if (input.matches("^[A-Za-z]+,\\d{2}:\\d{2},\\d{2}:\\d{2}$")) {
+                        String[] parts = input.split(",");
+                        parts[0] = parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1).toLowerCase();
+                        if (!Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+                                .contains(parts[0])) {
+                            System.out.println("Invalid day. Please enter a valid day of the week.");
+                            continue;
+                        }
+                        timeSlots.add(input);
+                    } else {
+                        System.out.println("Invalid format. Please enter the time slot in the format DAY,HH:mm,HH:mm.");
+                    }
                 }
-
-                app.adminCreateOffering(lesson, location, timeSlots, capacity, isPrivate, startDate, endDate);
+                try {
+                    app.adminCreateOffering(lesson, location, timeSlots, maxCapacity, start, end);
+                    System.out.println("Offering successfully created.");
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
                 break;
             case 4:
                 while (true) {
