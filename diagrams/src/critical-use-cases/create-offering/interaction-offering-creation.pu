@@ -1,55 +1,28 @@
-@startuml
+@startuml Sequence Diagram for Creating an Offering
 title Sequence Diagram for Creating an Offering
 
 actor Admin
 participant Terminal
 participant App
-participant LocationRecords
-participant ScheduleRecords
-participant OfferingRecords
-
+participant Offering
 activate Terminal
-
-Admin -> Terminal: adminCreateOffering(lesson, locationId, timeSlots[], capacity, isPrivate, startDate, endDate)
+Admin -> Terminal: createOffering(lesson, location, times[])
 activate App
-Terminal -> App: adminCreateOffering(lesson, locationId, timeSlots[], capacity, isPrivate, startDate, endDate)
+Terminal -> App: createOffering(lesson, location, times[])
+App -> App: validate(lesson, location, times[])
 
-App -> LocationRecords: getLocation(locationId)
-alt Location exists
-    LocationRecords --> App: Location found
-else Location not found
-    LocationRecords --> App: null
-    App --> Terminal: "Error: Invalid location."
-    deactivate App
-    deactivate Terminal
-    return
-end
-
-App -> App: validateDates(startDate, endDate)
-alt Dates are valid
-    App -> App: validateTimeSlots(timeSlots)
-    alt Time slots valid
-        App -> OfferingRecords: checkForConflicts(locationId, timeSlots, startDate, endDate)
-        alt No conflicts
-            OfferingRecords --> App: No conflicts
-            App -> ScheduleRecords: createSchedule(startDate, endDate, timeSlots)
-            ScheduleRecords --> App: Schedule ID
-
-            App -> OfferingRecords: createOffering(lesson, Location, Schedule ID, capacity, isPrivate)
-            OfferingRecords --> App: Offering created successfully
-            App --> Terminal: "Offering successfully created."
-        else Conflicts found
-            OfferingRecords --> App: Conflict detected
-            App --> Terminal: "Error: Time slot conflicts with existing offering."
-        end
-    else Invalid time slots
-        App --> Terminal: "Error: Invalid time slots."
+alt Success
+    App -> Schedule ** : create(TimeSlots[]) 
+    loop For each time in times[]
+        App -> TimeSlot ** : create(time) 
     end
-else Invalid dates
-    App --> Terminal: "Error: Invalid dates."
+    App -> Lesson ** : create(lesson)
+    App -> Offering ** : create(Location, Lesson, Schedule)
+else Error
+    App --> Terminal: Validation error message
 end
-
 deactivate App
+
 Terminal --> Admin: Status message
 deactivate Terminal
 @enduml
