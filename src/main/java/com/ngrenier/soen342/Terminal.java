@@ -163,7 +163,7 @@ public class Terminal {
                     System.out.println(e.getMessage());
                 }
                 break;
-            case 0:
+            case 5:
                 try {
                     app.displayCurrentGuardian();
                 } catch (IllegalStateException e) {

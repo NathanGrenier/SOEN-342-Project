@@ -133,14 +133,6 @@ public class App {
         cityRecords.displayCities();
     }
 
-    public void clientViewPublicOfferings() {
-        if (currentUser instanceof Client) {
-            bookingRecords.clientDisplayPublicOfferings((Client) currentUser);
-        } else {
-            throw new IllegalStateException("User must be a client to view their annotated offerings.");
-        }
-    }
-
     public void createBooking(int offeringId) throws IllegalStateException {
         if (currentUser instanceof Client) {
             Offering offering = offeringRecords.getOfferings().get(offeringId);
@@ -362,25 +354,6 @@ public class App {
                 break;
             default:
                 System.out.println("Invalid user type.");
-        }
-    }
-
-    public void viewInstructorAvailableOfferings() {
-
-        if (currentUser instanceof Instructor) {
-            Instructor instructor = (Instructor) currentUser;
-            HashMap<Integer, City> availableCities = instructor.getCities();
-            HashMap<Integer, Specialization> instructorSpecializations = instructor.getSpecializations();
-            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
-            publicOfferings = publicOfferings.values().stream()
-                    .filter(offering -> offering.getInstructor() == null)
-                    .filter(offering -> availableCities.values().contains(offering.getLocation().getCity()))
-                    .filter(offering -> instructorSpecializations.values().stream()
-                            .anyMatch(spec -> offering.getLesson().contains(spec.getName())))
-                    .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
-            offeringRecords.displayOfferings(publicOfferings);
-        } else {
-            throw new IllegalStateException("User must be an instructor to view their offerings.");
         }
     }
 
