@@ -51,14 +51,12 @@ public class ScheduleRecords {
                 int timeSlotId = rs.getInt("TS_ID");
                 Map<Integer, TimeSlot> timeSlots = schedule.getTimeSlots();
     
-                // Handle potential null for "TS_DAY" column
                 String dayString = rs.getString("TS_DAY");
                 if (dayString != null) {
                     DayOfWeek day = DayOfWeek.valueOf(dayString.toUpperCase());
                     Time startTime = rs.getTime("TS_START_TIME");
                     Time endTime = rs.getTime("TS_END_TIME");
     
-                    // Ensure timeSlots is not null before putting values
                     if (!timeSlots.containsKey(timeSlotId)) {
                         TimeSlot newTimeSlot = new TimeSlot(timeSlotId, day, startTime, endTime);
                         timeSlots.put(timeSlotId, newTimeSlot);

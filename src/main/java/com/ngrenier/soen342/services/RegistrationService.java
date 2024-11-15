@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ngrenier.soen342.City;
+import com.ngrenier.soen342.CityRecords;
 import com.ngrenier.soen342.config.DatabaseConfig;
 import com.ngrenier.soen342.users.Client;
 import com.ngrenier.soen342.users.Instructor;
 import com.ngrenier.soen342.users.InstructorRecords;
 import com.ngrenier.soen342.users.Specialization;
+import com.ngrenier.soen342.users.SpecializationRecords;
 
 public class RegistrationService {
     private static RegistrationService instance = new RegistrationService();
@@ -93,12 +95,12 @@ public class RegistrationService {
     }
 
     public Instructor registerInstructor(String name, String username, String password, String phoneNumber,
-            String[] specializationNames, String[] cityNames, InstructorRecords instructorRecords)
+            String[] specializationNames, String[] cityNames, InstructorRecords instructorRecords,
+            CityRecords cityRecords, SpecializationRecords specializationRecords)
             throws IllegalStateException {
 
-        Map<Integer, Specialization> specializations = instructorRecords.getSpecializationRecords()
-                .getSpecializations();
-        Map<Integer, City> cities = instructorRecords.getCityRecords().getCities();
+        Map<Integer, Specialization> specializations = specializationRecords.getSpecializations();
+        Map<Integer, City> cities = cityRecords.getCities();
 
         ArrayList<Integer> newInstructorSpecializations = new ArrayList<>();
         ArrayList<Integer> newInstructorCities = new ArrayList<>();

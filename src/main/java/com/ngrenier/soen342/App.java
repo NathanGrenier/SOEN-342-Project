@@ -21,8 +21,12 @@ import com.ngrenier.soen342.users.ClientRecords;
 import com.ngrenier.soen342.users.Instructor;
 import com.ngrenier.soen342.users.InstructorRecords;
 import com.ngrenier.soen342.users.Specialization;
+import com.ngrenier.soen342.users.SpecializationRecords;
 import com.ngrenier.soen342.users.User;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class App {
@@ -34,8 +38,17 @@ public class App {
     private ClientRecords clientRecords = ClientRecords.getInstance();
     private InstructorRecords instructorRecords = InstructorRecords.getInstance();
     private LocationRecords locationRecords = LocationRecords.getInstance();
+    private SpecializationRecords specializationRecords = SpecializationRecords.getInstance();
+    private CityRecords cityRecords = CityRecords.getInstance();
+
+
     private OfferingRecords offeringRecords = OfferingRecords.getInstance();
     private BookingRecords bookingRecords = BookingRecords.getInstance();
+
+    public Map<Integer, Offering> filterOfferings(String criteria) {
+        return offeringRecords.getOfferings().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
     private static App instance = new App();
 
@@ -88,7 +101,7 @@ public class App {
             String[] cityNames) throws IllegalStateException {
         Instructor newInstructor = registrationService.registerInstructor(name, username, password, phone,
                 specializationNames,
-                cityNames, instructorRecords);
+                cityNames, instructorRecords, cityRecords, specializationRecords);
 
         instructorRecords.addInstructor(newInstructor);
     }
@@ -114,10 +127,102 @@ public class App {
     }
 
     public void displaySpecializations() {
-        instructorRecords.getSpecializationRecords().displaySpecializations();
+        specializationRecords.displaySpecializations();
     }
     public void displayCities() {
-        instructorRecords.getCityRecords().displayCities();
+        cityRecords.displayCities();
+    }
+
+    public void clientViewPublicOfferings() {
+        if (currentUser instanceof Client) {
+            bookingRecords.clientDisplayPublicOfferings((Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be a client to view their annotated offerings.");
+        }
+    }
+
+    public void createBooking(int offeringId) throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Offering offering = offeringRecords.getOfferings().get(offeringId);
+            if (offering == null) {
+                throw new IllegalStateException("Offering with the ID of '" + offeringId + "' was not found.");
+            }
+
+            bookingRecords.createBooking(offering, (Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be an instructor to create an offering.");
+        }
+    }
+
+    public void viewClientBookings() {
+        if (currentUser instanceof Client) {
+            bookingRecords.displayClientBookings((Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be an client to view your bookings.");
+        }
+    }
+
+    public void viewClientBookings(String username) throws IllegalStateException {
+        Client client = clientRecords.getClients()
+                .values().stream()
+                .filter(c -> c.getUsername().equals(username))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Client with the username of '" + username + "' was not found."));
+
+        bookingRecords.displayClientBookings((Client) client);
+    }
+
+    public void cancelBooking(int offeringId) throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Offering offering = offeringRecords.getOfferings().get(offeringId);
+            if (offering == null) {
+                throw new IllegalStateException("Offering with the ID of '" + offeringId + "' was not found.");
+            }
+            bookingRecords.cancelBooking(offering, (Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be a client to cancel a booking.");
+        }
+    }
+
+    public void updateGuardian(String username) throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Client client = (Client) currentUser;
+            Client guardian = clientRecords.getClients().values().stream()
+                    .filter(c -> c.getUsername().equals(username))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException(
+                            "Client with the username of '" + username + "' was not found."));
+
+            if (guardian.equals(client)) {
+                throw new IllegalStateException("You cannot be your own guardian.");
+            }
+
+            if (guardian.getAge() < 18) {
+                throw new IllegalStateException("A guardian must be 18 years or older.");
+            }
+
+            clientRecords.updateGuardian(client, guardian);
+        } else {
+            throw new IllegalStateException("User must be a client to add a guardian.");
+        }
+    }
+
+    public void displayCurrentGuardian() throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Client client = (Client) currentUser;
+            Client guardian = client.getGuardian();
+            if (guardian != null) {
+                System.out.println("Your current guardian is:");
+                System.out.println("- Name: " + guardian.getName());
+                System.out.println("- Username: " + guardian.getUsername());
+                System.out.println("- Age: " + guardian.getAge());
+            } else {
+                System.out.println("No guardian assigned.");
+            }
+        } else {
+            throw new IllegalStateException("User must be a client to view their guardian.");
+        }
     }
     public void displayLocations() {
         locationRecords.displayLocations();
@@ -257,6 +362,25 @@ public class App {
                 break;
             default:
                 System.out.println("Invalid user type.");
+        }
+    }
+
+    public void viewInstructorAvailableOfferings() {
+
+        if (currentUser instanceof Instructor) {
+            Instructor instructor = (Instructor) currentUser;
+            HashMap<Integer, City> availableCities = instructor.getCities();
+            HashMap<Integer, Specialization> instructorSpecializations = instructor.getSpecializations();
+            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
+            publicOfferings = publicOfferings.values().stream()
+                    .filter(offering -> offering.getInstructor() == null)
+                    .filter(offering -> availableCities.values().contains(offering.getLocation().getCity()))
+                    .filter(offering -> instructorSpecializations.values().stream()
+                            .anyMatch(spec -> offering.getLesson().contains(spec.getName())))
+                    .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
+            offeringRecords.displayOfferings(publicOfferings);
+        } else {
+            throw new IllegalStateException("User must be an instructor to view their offerings.");
         }
     }
 
