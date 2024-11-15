@@ -1,3 +1,22 @@
 @startuml SSD-Success: Create Booking
 
+actor Client
+actor System
+
+' TODO: Either add a note saying that the selectOperation() functions don't exists (they're just scanner inputs), or redo the diagram (Specifically the Terminal parts.)
+
+Client <-- System: display Public operations
+Client -> System: selectOperation(loginOperationId)
+...
+Client -> System: login(username, password)
+Client <-- System: success
+...
+loop
+Client <-- System: display Client operations
+Client -> System: selectOperation(createBookingOperationId)
+Client <-- System: display Public Offerings
+Client -> System: createBooking(offeringId)
+Client <-- System: success
+end
+
 @enduml

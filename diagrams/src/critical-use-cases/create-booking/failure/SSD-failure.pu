@@ -1,3 +1,33 @@
 @startuml SSD-Failure: Create Booking
+actor Client
+actor System
+
+Client <-- System: display Public operations
+alt Successful
+    Client -> System: selectOperation(loginOperationId)
+    alt Successful
+        Client -> System: login(username, password)
+        Client <-- System: login success
+        Client <-- System: display Client operations
+    else Failure
+        Client <-- System: authentication rejected
+    end
+else Failure
+    Client <-- System: invalid operation id
+end
+...
+alt Successful
+    Client -> System: selectOperation(createBookingOperationId)
+    Client <-- System: display Public Offerings
+else Failure
+    Client <-- System: invalid operation id
+end
+alt Successful
+    Client -> System: createBooking(offeringId)
+    Client <-- System: success
+else Failure
+    Client <-- System: error while creating booking
+end
+
 
 @enduml
