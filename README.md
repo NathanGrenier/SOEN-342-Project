@@ -77,7 +77,7 @@ There are two other Maven lifecycles of note beyond the default list above. They
 
 To apply any migrations, use the following command: `mvn flyway:migrate`
 
-> To specify what `flyway.conf` file to use: `mvn flyway:migrate -Dflyway.configFiles=src/main/resources/flyway-dev.conf`
+> To specify what `flyway.conf` file to use: `mvn flyway:migrate -D flyway.configFiles=src/main/resources/flyway-dev.conf`
 
 #### Structuring Migrations
 

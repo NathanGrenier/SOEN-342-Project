@@ -44,6 +44,7 @@ package System {
         
         App --> AdminRecords
         App --> ClientRecords
+        App -> SpecializationRecords
 
         User <|-right- Client
         User <|-down- Instructor

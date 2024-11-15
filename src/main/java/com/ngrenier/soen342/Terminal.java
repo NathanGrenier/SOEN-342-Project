@@ -84,7 +84,7 @@ public class Terminal {
                 System.out.println("1. Login");
                 System.out.println("2. Register");
                 System.out.println("3. View Offerings");
-                System.out.println("4. Exit");
+                System.out.println("0. Exit");
                 break;
             case "Client":
                 System.out.println("\n=== Select an Option Below by Entering its Number ===");
@@ -92,6 +92,8 @@ public class Terminal {
                 System.out.println("2. Make a Booking");
                 System.out.println("3. View My Bookings");
                 System.out.println("4. Cancel a Booking");
+                System.out.println("5. Display My Guardian");
+                System.out.println("6. Add a Guardian");
                 System.out.println("0. Logout");
                 break;
             case "Instructor":
@@ -117,12 +119,6 @@ public class Terminal {
     }
 
     private static void handleClientOperation(int operation) {
-        // System.out.println("1. View Offerings");
-        // System.out.println("2. Make a Booking");
-        // System.out.println("3. View My Bookings");
-        // System.out.println("4. Cancel a Booking");
-        // System.out.println("5. Logout");
-
         int offeringId;
 
         switch (operation) {
@@ -130,20 +126,61 @@ public class Terminal {
                 app.clientViewPublicOfferings();
                 break;
             case 2:
-                System.out.println("\n=== Select an Offering by entering its Number ===");
-
-                // app.clientViewPublicOfferings();
-
+                System.out.println("\n=== Select an Offering by its Number ===");
+                app.clientViewPublicOfferings();
                 System.out.print("Enter the offering ID: ");
+                while (!scanner.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a valid offering ID.");
+                    scanner.next();
+                }
                 offeringId = scanner.nextInt();
                 scanner.nextLine();
-                // app.createBooking(offeringId);
+                try {
+                    app.createBooking(offeringId);
+                    System.out.println("Booking for offering (" + offeringId + ") created successfully.");
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
                 break;
             case 3:
-                // app.viewClientBookings();
+                System.out.println("\n=== Your Bookings ===");
+                app.viewClientBookings();
                 break;
             case 4:
-                // app.cancelBooking(offeringId);
+
+                app.viewClientBookings();
+                System.out.println("Enter the id of the booking you would like to cancel: ");
+                while (!scanner.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a valid booking ID.");
+                    scanner.next();
+                }
+                int bookingId = scanner.nextInt();
+                scanner.nextLine();
+                try {
+                    app.cancelBooking(bookingId);
+                    System.out.println("Booking (" + bookingId + ") cancelled successfully.");
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+            case 0:
+                try {
+                    app.displayCurrentGuardian();
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+            case 6:
+                System.out.print(
+                        "Enter your new guardian's username: ");
+                String username = scanner.nextLine();
+                username = username.trim();
+                try {
+                    app.updateGuardian(username);
+                    System.out.println(username + " is now your guardian.");
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
                 break;
             case 0:
                 try {
@@ -200,6 +237,17 @@ public class Terminal {
     public static void handleAdminOperation(int operation) {
         String accountType;
         switch (operation) {
+            case 1:
+                app.displayUsers("C");
+                System.out.print("Select a client by their username to view their bookings: ");
+                String clientUsername = scanner.nextLine();
+                clientUsername = clientUsername.trim();
+                try {
+                    app.viewClientBookings(clientUsername);
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
             case 2:
                 app.adminViewOfferings();
                 break;
@@ -289,8 +337,10 @@ public class Terminal {
                 app.displayUsers(accountType);
                 System.out.print("Enter the username of the account to delete: ");
                 String username = scanner.next();
+                username = username.trim();
                 try {
                     app.deleteUser(accountType, username);
+                    System.out.println("User (" + username + ") deleted successfully.");
                 } catch (IllegalStateException e) {
                     System.out.println(e.getMessage());
                 }
@@ -309,8 +359,6 @@ public class Terminal {
     }
 
     public static void handlePublicOperation(int operation) {
-        // TODO: 3. View Offerings
-
         String username, password, name;
         switch (operation) {
             case 1:
@@ -415,7 +463,7 @@ public class Terminal {
             case 3:
                 app.publicViewOfferings();
                 break;
-            case 4:
+            case 0:
                 System.exit(0);
                 break;
             default:
