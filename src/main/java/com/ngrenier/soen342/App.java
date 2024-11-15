@@ -36,7 +36,6 @@ public class App {
     private LocationRecords locationRecords = LocationRecords.getInstance();
     private OfferingRecords offeringRecords = OfferingRecords.getInstance();
     private BookingRecords bookingRecords = BookingRecords.getInstance();
-    private CityRecords cityRecords = CityRecords.getInstance();
 
     private static App instance = new App();
 
