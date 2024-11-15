@@ -122,7 +122,7 @@ public class OfferingRecords {
             if (existingOffering.getLocation().getId() == offering.getLocation().getId()) {
                 // Check if the time slots overlap
                 if (existingOffering.getSchedule().getTimeSlots().equals(offering.getSchedule().getTimeSlots())) {
-                    throw new SQLException("[TIME SLOT CONFLICT] The offering at conflicts without another.");
+                    throw new SQLException("[TIME SLOT CONFLICT] The offering conflicts without another.");
                 }
             }
         }
