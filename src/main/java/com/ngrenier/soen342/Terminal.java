@@ -1,5 +1,8 @@
 package com.ngrenier.soen342;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Terminal {
@@ -89,21 +92,22 @@ public class Terminal {
                 System.out.println("2. Make a Booking");
                 System.out.println("3. View My Bookings");
                 System.out.println("4. Cancel a Booking");
-                System.out.println("5. Logout");
+                System.out.println("0. Logout");
                 break;
             case "Instructor":
                 System.out.println("\n=== Select an Option Below by Entering its Number ===");
                 System.out.println("1. View Available Offerings to Take");
-                System.out.println("2. View My Offerings");
-                System.out.println("3. Logout");
+                System.out.println("2. Take an Offering");
+                System.out.println("0. Logout");
                 break;
             case "Admin":
                 System.out.println("\n=== Select an Option Below by Entering its Number ===");
                 System.out.println("1. View Bookings");
-                System.out.println("2. Create New Offerings");
-                System.out.println("3. View Accounts...");
-                System.out.println("4. Delete User Account");
-                System.out.println("5. Logout");
+                System.out.println("2. View Offerings");
+                System.out.println("3. Create New Offerings");
+                System.out.println("4. View Accounts...");
+                System.out.println("5. Delete User Account");
+                System.out.println("0. Logout");
                 break;
             default:
                 System.out.println("Error: Invalid user type. Ending session.");
@@ -126,7 +130,7 @@ public class Terminal {
                 app.clientViewPublicOfferings();
                 break;
             case 2:
-                System.out.println("\n=== Select an Offering by its Number ===");
+                System.out.println("\n=== Select an Offering by entering its Number ===");
 
                 // app.clientViewPublicOfferings();
 
@@ -141,7 +145,7 @@ public class Terminal {
             case 4:
                 // app.cancelBooking(offeringId);
                 break;
-            case 5:
+            case 0:
                 try {
                     app.logout();
                     System.out.println("Logged out successfully.");
@@ -157,12 +161,30 @@ public class Terminal {
     public static void handleInstructorOperation(int operation) {
         switch (operation) {
             case 1:
-                // app.viewInstructorOfferings();
+                app.instructorViewAllOfferings();
                 break;
             case 2:
-                // app.acceptInstructorLesson();
+            while (true) {
+                app.viewInstructorAvailableOfferings();
+                System.out.print("Enter the Offering ID to accept: ");
+                int offeringId = 0;
+                if (scanner.hasNextInt()) {
+                    offeringId = scanner.nextInt();
+                    scanner.nextLine();
+                } else {
+                    System.out.println("Invalid id. Please try again.");
+                    scanner.nextLine();
+                    continue;
+                }
+                try {
+                    app.acceptInstructorLesson(offeringId);
+                    break;
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
                 break;
-            case 3:
+            case 0:
                 try {
                     app.logout();
                     System.out.println("Logged out successfully.");
@@ -178,13 +200,64 @@ public class Terminal {
     public static void handleAdminOperation(int operation) {
         String accountType;
         switch (operation) {
-            case 1:
-                // app.viewAllBookings();
-                break;
             case 2:
-                // app.createOffering();
+                app.adminViewOfferings();
                 break;
             case 3:
+                System.out.println("\n=== Select a Location from the following ===");
+                app.displayLocations();
+                int location = 0;
+                while (true) {
+                    System.out.print("Enter the Location ID: ");
+                    
+                    if (scanner.hasNextInt()) {
+                        location = scanner.nextInt();
+                        scanner.nextLine();
+                        break;
+                    } else {
+                        System.out.println("Invalid id. Please try again.");
+                        scanner.nextLine();
+                        continue;
+                    }
+                }
+                System.out.print("Type the kind of Lesson: ");
+                String lesson = scanner.nextLine();
+                System.out.print("Enter the capacity: ");
+                int capacity = scanner.nextInt();
+                scanner.nextLine();
+                boolean isPrivate = false;
+                while (true){
+                    if (capacity>1){
+                        break;
+                    } else if (capacity == 1){
+                        isPrivate = true;
+                        break;
+                    } else {
+                        System.out.println("Invalid number. Please try again.");
+                        scanner.nextLine();
+                        continue;
+                    }
+                }
+                System.out.print("Enter the Start Date (yyyy-MM-dd): ");
+                String startDate = scanner.nextLine();
+
+                System.out.print("Enter the End Date (yyyy-MM-dd): ");
+                String endDate = scanner.nextLine();
+
+                // Collect time slots
+                List<String> timeSlots = new ArrayList<>();
+                while (true) {
+                    System.out.print("Enter Time Slot (DAY,HH:mm,HH:mm) or type 'done' to finish: ");
+                    String input = scanner.nextLine();
+                    if (input.equalsIgnoreCase("done")) {
+                        break;
+                    }
+                    timeSlots.add(input);
+                }
+
+                app.adminCreateOffering(lesson, location, timeSlots, capacity, isPrivate, startDate, endDate);
+                break;
+            case 4:
                 while (true) {
                     System.out.println("\n=== Select Account Type to View ===");
                     System.out.println("(C)lients");
@@ -200,7 +273,7 @@ public class Terminal {
                 }
                 app.displayUsers(accountType);
                 break;
-            case 4:
+            case 5:
                 while (true) {
                     System.out.println("\n=== Select Account Type to Delete ===");
                     System.out.println("(C)lients");
@@ -222,7 +295,7 @@ public class Terminal {
                     System.out.println(e.getMessage());
                 }
                 break;
-            case 5:
+            case 0:
                 try {
                     app.logout();
                     System.out.println("Logged out successfully.");
@@ -340,7 +413,7 @@ public class Terminal {
                 }
                 break;
             case 3:
-                // app.viewPublicOfferings();
+                app.publicViewOfferings();
                 break;
             case 4:
                 System.exit(0);

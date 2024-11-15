@@ -68,4 +68,11 @@ public class LocationRecords {
     public void setLocations(Map<Integer, Location> locations) {
         this.locations = locations;
     }
+    public void displayLocations() {
+        fetchAllLocations();
+        System.out.println("Locations:");
+        for (Location location : locations.values()) {
+            System.out.println(location.getId()+": " + location.getFacility() + " (" + location.getRoomName() + ")");
+        }
+    }
 }

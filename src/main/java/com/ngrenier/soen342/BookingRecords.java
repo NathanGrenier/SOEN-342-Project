@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.ngrenier.soen342.config.DatabaseConfig;
 import com.ngrenier.soen342.users.Client;
 import com.ngrenier.soen342.users.ClientRecords;
+import com.ngrenier.soen342.users.Instructor;
+import com.ngrenier.soen342.users.Specialization;
 
 public class BookingRecords {
     private Map<Integer, Booking> bookings = new HashMap<>();
@@ -122,12 +125,12 @@ public class BookingRecords {
                             .anyMatch(booking -> booking.getOffering().equals(offering));
 
                     String offeringTitle = String.format(
-                            "\n%s: %s%s%s taught by %s at %s (%s) in %s, %s. Current Capacity: %d/%d",
+                            "\n%s: %s%s%s%s at %s (%s) in %s, %s. Current Capacity: %d/%d",
                             offering.getId(),
                             isBooked ? "[UNAVAILABLE] " : "",
                             offering.isPrivate() ? "Private " : "",
                             offering.getLesson(),
-                            offering.getInstructor().getName(),
+                            offering.getInstructor()!=null ? " taught by "+offering.getInstructor().getName() : "",
                             offering.getLocation().getFacility(),
                             offering.getLocation().getRoomName(),
                             offering.getLocation().getCity().getName(),
