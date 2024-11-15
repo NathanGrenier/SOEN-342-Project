@@ -54,6 +54,7 @@ package Main {
     App -> InstructorRecords
     App -> CityRecords
     App -> LocationRecords
+    App --> ScheduleRecords
 
     InstructorRecords -> CityRecords
 
