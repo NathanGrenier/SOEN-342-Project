@@ -5,7 +5,9 @@ hide empty members
 skinparam linetype ortho
 
 package Main {
-    class Terminal {}
+    class Terminal {
+        
+    }
     class App {
         -User currentUser
         +void login(String username, String password)
