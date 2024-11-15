@@ -11,9 +11,11 @@ package System {
 
     package Services {
         class AuthenticationService {}
+        class RegistrationService {}
         class App as "Main::App"
         
-        AuthenticationService <- App
+        AuthenticationService <-left- App
+        RegistrationService <-right- App
     }
 
     package Users {
@@ -42,6 +44,7 @@ package System {
         
         App --> AdminRecords
         App --> ClientRecords
+        App -> SpecializationRecords
 
         User <|-right- Client
         User <|-down- Instructor

@@ -1,6 +1,5 @@
 package com.ngrenier.soen342;
 
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,9 +42,9 @@ public class OfferingRecords {
     }
 
     public void fetchAllOfferings() {
-        locations.fetchAllLocations();
-        schedules.fetchAllSchedules();
-        instructors.fetchAllInstructors();
+        Map<Integer, Location> locationMap = locations.getLocations();
+        Map<Integer, Schedule> scheduleMap = schedules.getSchedules();
+        Map<Integer, Instructor> instructorMap = instructors.getInstructors();
 
         ArrayList<Integer> offeringIds = new ArrayList<>();
 
@@ -67,9 +66,9 @@ public class OfferingRecords {
 
                 offeringIds.add(oId);
 
-                Instructor instructor = instructors.getInstructorById(oInstructorId);
-                Location location = locations.getLocationById(oLocationId);
-                Schedule schedule = schedules.getScheduleById(oScheduleId);
+                Instructor instructor = instructorMap.get(oInstructorId);
+                Location location = locationMap.get(oLocationId);
+                Schedule schedule = scheduleMap.get(oScheduleId);
 
                 if (!offerings.containsKey(oId)) {
                     Offering offering = new Offering(oId, oLesson, oMaxCapacity, oCurrentCapacity, oIsPrivate, schedule,
@@ -93,12 +92,27 @@ public class OfferingRecords {
         pruneDeletedOfferings(offeringIds);
     }
 
-    public void addOffering(Offering offering) {
-        offerings.put(offering.getId(), offering);
+    public void displayOfferings(Map<Integer, Offering> offerings) {
+        offerings.values().stream().forEach(offering -> {
+            String offeringTitle = String.format(
+                    "\n%s: %s%s at %s (%s) in %s, %s. Current Capacity: %d/%d",
+                    offering.getId(),
+                    offering.isPrivate() ? "Private " : "",
+                    offering.getLesson(),
+                    offering.getLocation().getFacility(),
+                    offering.getLocation().getRoomName(),
+                    offering.getLocation().getCity().getName(),
+                    offering.getLocation().getCity().getProvince(),
+                    offering.getCurrentCapacity(),
+                    offering.getMaxCapacity());
+            System.out.println(offeringTitle);
+
+            Schedule.displaySchedule(offering.getSchedule());
+        });
     }
 
-    public Offering getOfferingById(int id) {
-        return offerings.get(id);
+    public void addOffering(Offering offering) {
+        offerings.put(offering.getId(), offering);
     }
 
     public Map<Integer, Offering> getOfferings() {

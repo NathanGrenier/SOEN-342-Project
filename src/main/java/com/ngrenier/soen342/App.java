@@ -1,64 +1,264 @@
 package com.ngrenier.soen342;
 
 import com.ngrenier.soen342.services.AuthenticationService;
+import com.ngrenier.soen342.services.RegistrationService;
+
+import com.ngrenier.soen342.users.Admin;
 import com.ngrenier.soen342.users.AdminRecords;
+import com.ngrenier.soen342.users.Client;
 import com.ngrenier.soen342.users.ClientRecords;
+import com.ngrenier.soen342.users.Instructor;
 import com.ngrenier.soen342.users.InstructorRecords;
+import com.ngrenier.soen342.users.Specialization;
+import com.ngrenier.soen342.users.SpecializationRecords;
 import com.ngrenier.soen342.users.User;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class App {
-    private AuthenticationService authService = new AuthenticationService();
+    private AuthenticationService authService = AuthenticationService.getInstance();
+    private RegistrationService registrationService = RegistrationService.getInstance();
     private User currentUser = null;
 
     private AdminRecords adminRecords = AdminRecords.getInstance();
     private ClientRecords clientRecords = ClientRecords.getInstance();
     private InstructorRecords instructorRecords = InstructorRecords.getInstance();
 
+    private SpecializationRecords specializationRecords = SpecializationRecords.getInstance();
+    private CityRecords cityRecords = CityRecords.getInstance();
+    private LocationRecords locationRecords = LocationRecords.getInstance();
+
     private OfferingRecords offeringRecords = OfferingRecords.getInstance();
     private BookingRecords bookingRecords = BookingRecords.getInstance();
 
+    public Map<Integer, Offering> filterOfferings(String criteria) {
+        return offeringRecords.getOfferings().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
     private static App instance = new App();
 
-    private App() {
+    public App() {
     }
 
     public static App getInstance() {
         return instance;
     }
 
-    public void display() {
-        // offeringRecords.getOfferings().forEach((k, v) -> {
-        // System.out.println(v.getLesson());
-        // System.out.println(v.getInstructor() != null ? v.getInstructor().getName() :
-        // "No Instructor");
-        // Location location = v.getLocation();
-        // System.out.println("Location:");
-        // System.out.println("\t" + location.getFacility());
-        // System.out.println("\t" + location.getRoomName());
-        // System.out.println("\t" + location.getType());
-        // System.out.println("\t" + location.getCity().getName());
+    public void login(String username, String password) throws IllegalStateException {
+        if (currentUser != null) {
+            return;
+        }
 
-        // Schedule schedule = v.getSchedule();
-        // System.out.println("Schedule:");
-        // System.out.println("\t" + schedule.getStartDate());
-        // System.out.println("\t" + schedule.getEndDate());
-        // List<TimeSlot> timeSlot = schedule.getTimeSlots();
-        // timeSlot.forEach(ts -> {
-        // System.out.println("\t\t" + ts.getDay());
-        // System.out.println("\t\t" + ts.getStartTime());
-        // System.out.println("\t\t" + ts.getEndTime());
-        // });
-        // });
+        User user = null;
 
-        // bookingRecords.getBookings().forEach((k, v) -> {
-        // System.out.println("Booking: " + k);
-        // System.out.println(v.getClient() != null ? v.getClient().getName() : "No
-        // Client");
-        // System.out.println(v.getOffering().getLesson() + " with " +
-        // (v.getOffering().getInstructor() != null
-        // ? v.getOffering().getInstructor().getName()
-        // : "No Instructor"));
-        // });
+        user = authService.login(username, password, clientRecords.getClients(),
+                instructorRecords.getInstructors(), adminRecords.getAdmins());
+
+        if (user != null) {
+            currentUser = user;
+        }
+    }
+
+    public void logout() throws IllegalStateException {
+        try {
+            authService.logout(currentUser);
+        } catch (IllegalStateException e) {
+            throw e;
+        } finally {
+            currentUser = null;
+        }
+    }
+
+    public void registerClient(String name, String username, String password, int age, String guardianUserName)
+            throws IllegalStateException {
+        Client newClient = registrationService.registerClient(name, age, username, password, guardianUserName,
+                clientRecords.getClients());
+
+        clientRecords.addClient(newClient);
+    }
+
+    public boolean validateAge(int age) throws IllegalStateException {
+        return registrationService.validateAge(age);
+    }
+
+    public void registerInstructor(String name, String username, String password, String phone,
+            String[] specializationNames,
+            String[] cityNames) throws IllegalStateException {
+        Instructor newInstructor = registrationService.registerInstructor(name, username, password, phone,
+                specializationNames,
+                cityNames, instructorRecords, cityRecords, specializationRecords);
+
+        instructorRecords.addInstructor(newInstructor);
+    }
+
+    public boolean validatePhone(String phone) throws IllegalStateException {
+        return registrationService.validatePhone(phone);
+    }
+
+    public void displayUsers(String userType) {
+        switch (userType) {
+            case "A":
+                adminRecords.displayAdmins();
+                break;
+            case "I":
+                instructorRecords.displayInstructors();
+                break;
+            case "C":
+                clientRecords.displayClients();
+                break;
+            default:
+                System.out.println("Invalid user type.");
+        }
+    }
+
+    public void displaySpecializations() {
+        specializationRecords.displaySpecializations();
+    }
+
+    public void displayCities() {
+        cityRecords.displayCities();
+    }
+
+    public void clientViewPublicOfferings() {
+        if (currentUser instanceof Client) {
+            bookingRecords.clientDisplayPublicOfferings((Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be a client to view their annotated offerings.");
+        }
+    }
+
+    public void createBooking(int offeringId) throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Offering offering = offeringRecords.getOfferings().get(offeringId);
+            if (offering == null) {
+                throw new IllegalStateException("Offering with the ID of '" + offeringId + "' was not found.");
+            }
+
+            bookingRecords.createBooking(offering, (Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be an instructor to create an offering.");
+        }
+    }
+
+    public void viewClientBookings() {
+        if (currentUser instanceof Client) {
+            bookingRecords.displayClientBookings((Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be an client to view your bookings.");
+        }
+    }
+
+    public void viewClientBookings(String username) throws IllegalStateException {
+        Client client = clientRecords.getClients()
+                .values().stream()
+                .filter(c -> c.getUsername().equals(username))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Client with the username of '" + username + "' was not found."));
+
+        bookingRecords.displayClientBookings((Client) client);
+    }
+
+    public void cancelBooking(int offeringId) throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Offering offering = offeringRecords.getOfferings().get(offeringId);
+            if (offering == null) {
+                throw new IllegalStateException("Offering with the ID of '" + offeringId + "' was not found.");
+            }
+            bookingRecords.cancelBooking(offering, (Client) currentUser);
+        } else {
+            throw new IllegalStateException("User must be a client to cancel a booking.");
+        }
+    }
+
+    public void updateGuardian(String username) throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Client client = (Client) currentUser;
+            Client guardian = clientRecords.getClients().values().stream()
+                    .filter(c -> c.getUsername().equals(username))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException(
+                            "Client with the username of '" + username + "' was not found."));
+
+            if (guardian.equals(client)) {
+                throw new IllegalStateException("You cannot be your own guardian.");
+            }
+
+            if (guardian.getAge() < 18) {
+                throw new IllegalStateException("A guardian must be 18 years or older.");
+            }
+
+            clientRecords.updateGuardian(client, guardian);
+        } else {
+            throw new IllegalStateException("User must be a client to add a guardian.");
+        }
+    }
+
+    public void displayCurrentGuardian() throws IllegalStateException {
+        if (currentUser instanceof Client) {
+            Client client = (Client) currentUser;
+            Client guardian = client.getGuardian();
+            if (guardian != null) {
+                System.out.println("Your current guardian is:");
+                System.out.println("- Name: " + guardian.getName());
+                System.out.println("- Username: " + guardian.getUsername());
+                System.out.println("- Age: " + guardian.getAge());
+            } else {
+                System.out.println("No guardian assigned.");
+            }
+        } else {
+            throw new IllegalStateException("User must be a client to view their guardian.");
+        }
+    }
+
+    public void deleteUser(String userType, String username) {
+        switch (userType) {
+            case "I":
+                instructorRecords.deleteInstructor(username);
+                bookingRecords.pruneBookingsWithoutInstructor();
+                break;
+            case "C":
+                clientRecords.deleteClient(username);
+                break;
+            default:
+                System.out.println("Invalid user type.");
+        }
+    }
+
+    public void viewInstructorAvailableOfferings() {
+
+        if (currentUser instanceof Instructor) {
+            Instructor instructor = (Instructor) currentUser;
+            HashMap<Integer, City> availableCities = instructor.getCities();
+            HashMap<Integer, Specialization> instructorSpecializations = instructor.getSpecializations();
+            Map<Integer, Offering> publicOfferings = offeringRecords.getOfferings();
+            publicOfferings = publicOfferings.values().stream()
+                    .filter(offering -> offering.getInstructor() == null)
+                    .filter(offering -> availableCities.values().contains(offering.getLocation().getCity()))
+                    .filter(offering -> instructorSpecializations.values().stream()
+                            .anyMatch(spec -> offering.getLesson().contains(spec.getName())))
+                    .collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
+            offeringRecords.displayOfferings(publicOfferings);
+        } else {
+            throw new IllegalStateException("User must be an instructor to view their offerings.");
+        }
+    }
+
+    public String getCurrentUserType() {
+        if (currentUser instanceof Admin) {
+            return "Admin";
+        } else if (currentUser instanceof Instructor) {
+            return "Instructor";
+        } else if (currentUser instanceof Client) {
+            return "Client";
+        } else if (currentUser == null) {
+            return "Public";
+        } else {
+            return "Unknown";
+        }
     }
 
     public User getCurrentUser() {

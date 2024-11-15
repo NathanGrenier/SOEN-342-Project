@@ -20,7 +20,7 @@ public class City {
             return false;
         }
         City city = (City) obj;
-        return name == city.name && province == city.province;
+        return name.equals(city.getName()) && province.equals(city.getProvince());
     }
 
     @Override

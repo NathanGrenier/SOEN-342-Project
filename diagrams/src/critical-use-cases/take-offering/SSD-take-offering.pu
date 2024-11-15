@@ -1,0 +1,17 @@
+@startuml System Sequence Diagram: Instructor Taking an Offering
+title System Sequence Diagram: Instructor Taking an Offering
+
+actor Instructor
+participant System
+
+Instructor -> System: viewOfferings()
+System --> Instructor: List of available Offerings
+
+Instructor -> System: acceptOffering(Offering)
+alt Success
+    System --> Instructor: Confirmation message
+else Failure
+    System --> Instructor: Error message
+end
+
+@enduml

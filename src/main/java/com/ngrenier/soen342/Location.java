@@ -15,6 +15,24 @@ public class Location {
         this.city = city;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Location location = (Location) obj;
+        return facility.equals(location.facility) && roomName.equals(location.roomName) && type.equals(location.type)
+                && city.equals(location.city);
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
     public int getId() {
         return id;
     }
