@@ -94,7 +94,11 @@ public class OfferingRecords {
 
         pruneDeletedOfferings(offeringIds);
     }
-    public void displayOfferings(Map<Integer, Offering> offerings) {
+    public int displayOfferings(Map<Integer, Offering> offerings) {
+        if(offerings.size()==0){
+            System.out.println("No offerings to display.");
+            
+        }
         offerings.values().stream().forEach(offering -> {
             String offeringTitle = String.format(
                     "\n%s: %s%s at %s (%s) in %s, %s. Current Capacity: %d/%d",
@@ -111,6 +115,7 @@ public class OfferingRecords {
 
             Schedule.displaySchedule(offering.getSchedule());
         });
+        return offerings.size();
     }
  public boolean addOffering(Offering offering) throws SQLException {
         for (Offering existingOffering : offerings.values()) {

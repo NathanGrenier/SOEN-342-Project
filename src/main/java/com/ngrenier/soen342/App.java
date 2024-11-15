@@ -226,7 +226,7 @@ public class App {
             throw new IllegalStateException("User must be a client to view their annotated offerings.");
         }
     }
-    public void viewInstructorAvailableOfferings(){
+    public int viewInstructorAvailableOfferings(){
         
         if (currentUser instanceof Instructor) {
             Instructor instructor = (Instructor) currentUser;
@@ -238,7 +238,8 @@ public class App {
                 .filter(offering -> availableCities.values().contains(offering.getLocation().getCity()))
                 .filter(offering -> instructorSpecializations.values().stream()
                 .anyMatch(spec -> offering.getLesson().contains(spec.getName()))).collect(Collectors.toMap(offering -> offering.getId(), offering -> offering));
-            offeringRecords.displayOfferings(publicOfferings);
+            return (offeringRecords.displayOfferings(publicOfferings));
+            
         } else {
             throw new IllegalStateException("User must be an instructor to view their offerings.");
         }

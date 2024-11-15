@@ -202,7 +202,8 @@ public class Terminal {
                 break;
             case 2:
             while (true) {
-                app.viewInstructorAvailableOfferings();
+                int count = app.viewInstructorAvailableOfferings();
+                if (count<=0)break;
                 System.out.print("Enter the Offering ID to accept: ");
                 int offeringId = 0;
                 if (scanner.hasNextInt()) {
