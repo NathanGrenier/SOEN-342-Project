@@ -4,6 +4,8 @@
 
 # 5 Minute Explanation Video
 
+The 5 minute video demonstrating the project's functionality is located in: `/static/SOEN-342-Project.mp4`  
+
 <video width="640" height="480" controls>
   <source src="/static/SOEN-342-Project.mp4" type="video/mp4">
   Your browser does not support the video tag.
