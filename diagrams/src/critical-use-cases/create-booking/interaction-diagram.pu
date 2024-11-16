@@ -1,0 +1,128 @@
+@startuml Interaction Diagram: Create Booking Success and Failure
+title Interaction Diagram: Create Booking Success and Failure
+
+participant Terminal as ":__Terminal__"
+participant App as ":__App__"
+participant ClientRecord as ":__ClientRecords__"
+participant BookingRecord as ":__BookingRecords__"
+participant OfferingRecord as ":__OfferingRecords__"
+collections BookingRecords as ":__BookingRecords__"
+participant Schedule
+participant AuthenticationService as ":__AuthenticationService__"
+collections ClientRecords as ":__ClientRecords__"
+collections OfferingRecords as ":__OfferingRecords__"
+
+Terminal -> App: getUserType 
+Terminal <-- App: userType := "Public" 
+
+Terminal -> Terminal: displayMenu()
+<-- Terminal: display Public operations
+
+-> Terminal: selectOperation(int loginOperationId)
+
+Terminal -> Terminal: handlePublicOperation(loginOperationId)
+<-- Terminal: prompt for username and password
+
+Terminal -> App: login(String username, String password)
+App -> ClientRecord: getClients()
+ClientRecord -> ClientRecord: fetchAllClients()
+App -> AuthenticationService: login(String username, String password, Map<Integer, Client> clients, Map<Integer, Instructor> instructors, Map<Integer, Admin> admins)
+
+alt 
+    AuthenticationService -> ClientRecords: find(String username, String password)
+    AuthenticationService <-- ClientRecords: client
+    App <-- AuthenticationService: currentUser := client
+    <-- Terminal: login success
+else user not found
+    Terminal <-- AuthenticationService: login failed
+    <-- Terminal: Error message
+else incorrect password
+    Terminal <-- AuthenticationService: login failed
+    <-- Terminal: Error message
+end
+...
+Terminal -> App: getUserType 
+Terminal <-- App: userType := "Client" 
+
+Terminal -> Terminal: displayMenu()
+<-- Terminal: display Client operations
+
+-> Terminal: selectOperation(int createBookingOperationId)
+Terminal -> Terminal: handleClientOperation(createBookingOperationId)
+
+Terminal -> App: clientViewPublicOfferings()
+Terminal -> BookingRecord: clientDisplayPublicOfferings(Client client)
+
+BookingRecord -> BookingRecord: getBookings()
+BookingRecord -> BookingRecord: fetchAllBookings()
+
+BookingRecord -> BookingRecords: find(Client client)
+BookingRecord <-- BookingRecords: clientBookings
+
+BookingRecord -> BookingRecord: getOfferings()
+BookingRecord -> BookingRecord: fetchAllOfferings()
+
+BookingRecord -> OfferingRecord: find()
+BookingRecord <-- OfferingRecord: publicOfferings
+
+BookingRecord -> BookingRecord: filter()
+
+loop on publicOfferings
+    <-- BookingRecord: display public offering
+    BookingRecord -> Schedule: displaySchedule(Schedule schedule)
+    <-- Schedule: display offering's schedule
+end
+
+<-- Terminal: prompt for offeringId
+-> Terminal: offeringId
+Terminal -> App: createBooking(int offeringId)
+
+App -> OfferingRecord: getOfferings()
+OfferingRecord -> OfferingRecord: fetchAllOfferings()
+App <-- OfferingRecord: offerings
+
+alt
+    App -> OfferingRecords: find(int offeringId)
+    App <-- OfferingRecords: offering
+    App -> BookingRecord: createBooking(Offering offering, Client currentUser)
+else offering not found
+    Terminal <-- App: offering not found
+    <-- Terminal: Error message
+end
+
+alt offering.currentCapacity >= offering.maxCapacity
+    Terminal <-- BookingRecord: offering full
+    <-- Terminal: Error message
+end
+
+alt client.age < 18 and client.guardian = null
+    Terminal <-- BookingRecord: no guardian
+    <-- Terminal: Error message
+end
+
+BookingRecord -> BookingRecords: find(Client client)
+BookingRecord <-- BookingRecords: clientBookings
+
+loop on clientBookings
+    alt 
+        BookingRecord -> BookingRecord: isBookingConflict(Booking booking, Offering offering)
+        else booking conflict
+        Terminal <-- BookingRecord: isConflict
+        <-- Terminal: Error message
+    end
+end
+loop on clientBookings
+    alt 
+        BookingRecord -> BookingRecord: isScheduleConflict(TimeSlot bookingTimeslots, TimeSlot offeringTimeslots)
+        else schedule conflict
+        Terminal <-- BookingRecord: isConflict
+        <-- Terminal: Error message
+    end
+end
+
+create Booking as "b:__Booking__"
+BookingRecord -> Booking: create()
+BookingRecord -> BookingRecords: add(b)
+
+<-- Terminal: booking success
+@enduml
