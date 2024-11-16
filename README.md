@@ -11,6 +11,12 @@ The 5 minute video demonstrating the project's functionality is located in: `/st
   Your browser does not support the video tag.
 </video>
 
+# UML Diagrams
+
+All diagram images can be found under `/diagrams/out/`
+
+Similarly, OCL Expressions can be found under `/diagrams/ocl/`  
+
 ## Team Members
 
 **Class Section:** II
