@@ -2,4 +2,5 @@ Question: "A client does not have multiple bookings on the same day and time slo
 
 (for simplicity we consider only identical day and time slots, even though in reality a booking on Monday 3pm – 4pm and another also on Monday 3:30pm – 4:30pm should not be acceptable.) 
 
-context <Class Name>:
+context Client:
+    inv: self.booking -> forAll(b1, b2 : Booking | b1 <> b2 implies b1.offering.schedule.timeSlot <> b2.offering.schedule.timeSlot)

@@ -9,37 +9,46 @@ actor Instructor
 actor Admin
 
 rectangle System {
-    usecase "Register" as Register
-    usecase "Take Lesson" as TakeOffer
-    usecase "View Offerings" as ViewOfferings
     usecase "Login" as Login
+    usecase "Register" as Register
+    usecase "Logout" as Logout
+    usecase "View All Offerings" as ViewAllOfferings
+    usecase "View Public Offerings" as ViewPublicOfferings
+    usecase "View Private Offerings" as ViewPrivateOfferings
     usecase "Create Booking" as CreateBooking
-    usecase "Cancel Booking" as CancelBooking
-    usecase "Register Client" as RegisterClient
-    usecase "Register Instructor" as RegisterInstructor
     usecase "View Bookings" as ViewBookings
-    usecase "Manage Accounts" as ManageAccount
-    usecase "Create Offering" as CreateOffer
-    usecase "Manage Bookings" as ManageBooking
+    usecase "Cancel Booking" as CancelBooking
+    usecase "Display Current Guardian" as DisplayCurrentGuardian
+    usecase "Add Guardian" as AddGuardian
+    usecase "Cancel Booking" as CancelBooking
+    usecase "Take Offering" as TakeOffering
+    usecase "View User's Bookings" as ViewUserBookings
+    usecase "Create Offering" as CreateOffering
+    usecase "View Account Details" as ViewAccountDetails
+    usecase "Delete User" as DeleteUser
 }
 
-Public --> ViewOfferings
-Public --> Register
-Public --> Login
-Client --> ManageBooking
-Client --> ViewOfferings
+Register <-- Public
+Login <-- Public
+ViewPublicOfferings <-- Public
+
+Client --> ViewPublicOfferings
+Client --> CreateBooking
 Client --> ViewBookings
+Client --> CancelBooking
+Client --> DisplayCurrentGuardian
+Client --> AddGuardian
+Client --> Logout
 
-ManageBooking ..> CreateBooking
-ManageBooking ..> CancelBooking
+Instructor --> ViewAllOfferings
+Instructor --> ViewPrivateOfferings
+Instructor --> TakeOffering
+Instructor --> Logout
 
-Register ..> RegisterClient
-Register ..> RegisterInstructor
-
-Instructor --> TakeOffer
-
-Admin --> CreateOffer
-Admin --> ManageAccount
-Admin --> ViewBookings
-Admin --> ManageBooking
+Admin --> ViewUserBookings
+Admin --> ViewAllOfferings
+Admin --> CreateOffering
+Admin --> ViewAccountDetails
+Admin --> DeleteUser
+Admin --> Logout
 @enduml

@@ -95,7 +95,7 @@ public class Terminal {
                 System.out.println("3. View My Bookings");
                 System.out.println("4. Cancel a Booking");
                 System.out.println("5. Display My Guardian");
-                System.out.println("6. Add a Guardian");
+                System.out.println("6. Set a Guardian");
                 System.out.println("0. Logout");
                 break;
             case "Instructor":
@@ -241,15 +241,6 @@ public class Terminal {
     }
 
     public static void handleAdminOperation(int operation) {
-        // System.out.println("\n=== Select an Option Below by Entering its Number
-        // ===");
-        // System.out.println("1. View Bookings");
-        // System.out.println("2. View Offerings");
-        // System.out.println("3. Create New Offerings");
-        // System.out.println("4. View Accounts...");
-        // System.out.println("5. Delete User Account");
-        // System.out.println("0. Logout");
-
         String accountType;
         switch (operation) {
             case 1:

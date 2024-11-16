@@ -151,6 +151,9 @@ public class BookingRecords {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        Booking booking = new Booking(client, offering);
+        addBooking(booking);
     }
 
     public void cancelBooking(Offering offering, Client client) {
