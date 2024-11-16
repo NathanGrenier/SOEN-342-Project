@@ -179,7 +179,7 @@ public class BookingRecords {
         }
     }
 
-    public void displayClientBookings(Client client) {
+    public void displayClientBookings(Client client) throws IllegalStateException {
         Map<Integer, Offering> clientOfferings = getBookings().values().stream()
                 .filter(booking -> booking.getClient().equals(client))
                 .collect(Collectors.toMap(booking -> booking.getOffering().getId(), booking -> booking.getOffering()));

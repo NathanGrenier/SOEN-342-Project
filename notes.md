@@ -1,10 +1,10 @@
 # TODO
 - [x] UML Use Case Diagram
 - [x] UML Domain Model
-- [ ] UML Class diagram
+- [x] UML Class diagram
 - [x] Relational data model
 - [x] Package Diagram
-- [ ] 5 min video demonstrating entire system functionality.
+- [x] 5 min video demonstrating entire system functionality.
 ## Critical Use Cases
 Given a critical use case, we need to create these artifacts for **BOTH** the success and failure scenarios: 
 - A System Sequence Diagram (SSD)
@@ -32,20 +32,20 @@ A registered client can login into the system and sign up for an offering.
 - Instructors select lessons. 
 - Public can view offerings.
 ### Artifacts
-- [ ] **System sequence diagram(s**) to capture **success** and **failure** scenarios. 
-- [ ] Identification of system operations and **operation contracts**. 
-- [ ] UML interaction diagrams.
+- [x] **System sequence diagram(s**) to capture **success** and **failure** scenarios. 
+- [x] Identification of system operations and **operation contracts**. 
+- [x] UML interaction diagrams.
 
 ## Use Case 2: PROCESS BOOKINGS
 ### Requirements
 **Actors:** Client
 ### Artifacts 
-- [ ] System sequence diagram(s) to capture success and failure scenarios. 
-- [ ] Identification of system operations and operation contracts. 
-- [ ] UML interaction diagrams.
+- [x] System sequence diagram(s) to capture success and failure scenarios. 
+- [x] Identification of system operations and operation contracts. 
+- [x] UML interaction diagrams.
 
 ## FORMAL SPECIFICATIONS
-- [ ] OCL expressions
+- [x] OCL expressions
 
 1. "Offerings are unique.  In other words, multiple offerings on the same day and time slot must be offered at a different location."
 2. "Any client who is underage must necessarily be accompanied by an adult who acts as their guardian."

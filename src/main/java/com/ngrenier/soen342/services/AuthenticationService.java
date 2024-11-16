@@ -45,11 +45,10 @@ public class AuthenticationService {
             }
         }
 
-        if (isAdminLoggedIn()) {
-            throw new IllegalStateException("An admin is already logged in.");
-        }
-
         for (Admin admin : admins.values()) {
+            if (isAdminLoggedIn()) {
+                throw new IllegalStateException("An admin is already logged in.");
+            }
             if (admin.getUsername().equals(username)) {
                 if (admin.getPassword().equals(password)) {
                     updateAdminSession(admin);

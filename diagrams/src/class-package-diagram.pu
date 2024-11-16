@@ -1,59 +1,82 @@
-@startuml
-title Package Diagram: services, config, and Users
+@startuml Class Package Diagram
+title Class Package Diagram
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam linetype ortho
+
 package Main{}
 package Users {
     class App as "Main::App"{}
+
+    abstract User {
+        -id: int 
+        -name: String 
+        -username: String 
+        -password: String 
+    }
     class Admin {
     }
     class AdminRecords {
-        -{static} AdminRecords instance
+        -{static} instance: AdminRecords 
+        -admins: Map<Integer, Admin> 
+        --
+        +AdminRecords getInstance()
         +void fetchAllAdmins()
         +void displayAdmins()
         +void addAdmin(Admin admin)
     }
+    class Client {
+        -age: int 
+        -guardianId: int 
+        -guardian: Client 
+    }
     class ClientRecords {
-        -{static} ClientRecords instance
+        -{static} instance: ClientRecords
+        -clients: Map<Integer, Client> 
+        --
+        +ClientRecords getInstance()
         +void fetchAllClients()
         +void displayClients()
         +void deleteClient(String username)
         +void updateGuardian(Client client, Client guardian)
         +void addClient(Client client)
     }
-    class Client {
-        -int age
-        -int guardianId
+    class Instructor {
+        -phoneNumber: String 
+        -specializations: Map<Integer, Specialization>
+        -cities: Map<Integer, City>
     }
     class InstructorRecords {
-        -{static} InstructorRecords instance
+        -{static} instance: InstructorRecords
+        -instructors: Map<Integer, Instructor> 
+        --
+        +InstructorRecords getInstance()
         +void fetchAllInstructors()
         +void displayInstructors()
         +void deleteInstructor(String username)
         +void addInstructor(Instructor instructor)
     }
-    class Instructor
-    abstract User {
-        -int id
-        -string name
-        -string username
-        -string password
-    }
     class Specialization {
-        -int id
-        -string name
+        -id: int 
+        -name: String 
     }
     class SpecializationRecords {
-        -{static} SpecializationRecords instance
+        -{static} instance: SpecializationRecords
+        -specializations: Map<Integer, Specialization>
+        --
+        +SpecializationRecords getInstance()
         +void fetchAllSpecializations()
         +Specialization createSpecialization(String name)
         +void displaySpecializations()
         +void addSpecialization(Specialization specialization)
     }
+    
     App --> AdminRecords
     App --> ClientRecords
-    App -> SpecializationRecords
+    App --> SpecializationRecords
 
-    User <|-right- Client
-    User <|-down- Instructor
+    User <|-down- Client
+    User <|-right- Instructor
     User <|-left- Admin
     
     AdminRecords *- Admin
@@ -73,21 +96,23 @@ package Users {
 package services {
     class App as "Main::App"
     class RegistrationService {
-        +Client registerClient(String name, int age, String username, String password, 
-            String guardianUserName, Map<Integer, Client> clients)
-        +Instructor registerInstructor(String name, String username, String password, 
-            String phoneNumber, String[] specializationNames, String[] cityNames, 
-            InstructorRecords instructorRecords, CityRecords cityRecords, 
-            SpecializationRecords specializationRecords)
+        -{static} instance: RegistrationService
+        --
+        +Client registerClient(String name, int age, String username, String password, String guardianUserName, Map<Integer, Client> clients)
+        +Instructor registerInstructor(String name, String username, String password, String phoneNumber, String[] specializationNames, String[] cityNames, InstructorRecords instructorRecords, CityRecords cityRecords,  SpecializationRecords specializationRecords)
+        +boolean validateAge(int age)
+        +boolean validatePhone(String phone)
     }
     class AuthenticationService {
-        +User login(String username, String password, 
-            Map<Integer, Client> clients, Map<Integer, Instructor> instructors,
-            Map<Integer, Admin> admins)
+        -{static} instance: AuthenticationService
+        --
+        + AuthenticationService getInstance()
+        +User login(String username, String password, Map<Integer, Client> clients, Map<Integer, Instructor> instructors, Map<Integer, Admin> admins)
         +void logout(User currentUser)
     }
-    App -> RegistrationService
-    App -> AuthenticationService
+    
+    App -up-> RegistrationService
+    App -right-> AuthenticationService
 }
 
 package config {
@@ -100,11 +125,13 @@ package config {
     class LocationRecords as "Main::LocationRecords"{}
     class OfferingRecords as "Main::OfferingRecords"{}
     class ScheduleRecords as "Main::ScheduleRecords"{}
+    
     class DatabaseConfig {
-        -{static} Properties flywayProps
-        -{static} String URL
-        -{static} String USER
-        -{static} String PASSWORD
+        -{static} flywayProps: Properties 
+        -{static} URL: String 
+        -{static} USER: String
+        -{static} PASSWORD: String
+        --
         -{static} Properties loadFlywayProperties()
         +{static} Connection getConnection()
         +{static} void migrateDatabase()

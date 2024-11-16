@@ -140,7 +140,7 @@ public class App {
         }
     }
 
-    public void viewClientBookings() {
+    public void viewClientBookings() throws IllegalStateException {
         if (currentUser instanceof Client) {
             bookingRecords.displayClientBookings((Client) currentUser);
         } else {

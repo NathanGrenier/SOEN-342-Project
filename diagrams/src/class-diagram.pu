@@ -1,32 +1,53 @@
-@startuml
-title Package Diagram: Main with Additional Classes
+@startuml Class Diagram
+title Class Diagram
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam linetype ortho
 
 package Main {
     class InstructorRecords as "Users::InstructorRecords"  {}
     class Client as "Users::Client" {}
     class Instructor as "Users::Instructor" {}
+    
     class App {
+        -{static} instance: App
+        -currentUser: User
+        --
+        +App getInstance()
         +void login(String username, String password)
         +void logout()
         +void registerClient(String name, String username, 
         String password, int age, String guardianUserName)
+        +boolean validateAge(int age)
         +void registerInstructor(String name, String username, String password, 
         String phone,String[] specializationNames,String[] cityNames)
+        +boolean validatePhone(String phone)
         +void displayUsers(String userType)
         +void displaySpecializations()
         +void displayCities()
-        +void clientViewPublicOfferings()
         +void createBooking(int offeringId)
         +void viewClientBookings()
         +void viewClientBookings(String username)
         +void cancelBooking(int offeringId)
         +void updateGuardian(String username)
         +void displayCurrentGuardian()
-        +void deleteUser(String userType, String username)
+        +void displayLocations()
+        +void clientViewPublicOfferings()
         +void viewInstructorAvailableOfferings()
+        +void instructorViewAllOfferings()
+        +void adminViewOfferings()
+        +void publicViewOfferings()
+        +void acceptInstructorLesson(int offeringId)
+        +void adminCreateOffering(String lesson, int locationId, 
+        List<String> timeSlots, int maxCapacity, LocalDate startDate, LocalDate endDate)
+        +void deleteUser(String userType, String username)
+        +void getCurrentUserType()
     }
 
     class Terminal {
+        {static} scanner: Scanner
+        {static} running: boolean
+        --
         +void displayMenu(String userType)
         +void handleClientOperation(int operation)
         +void handleInstructorOperation(int operation)
@@ -34,12 +55,15 @@ package Main {
         +void handlePublicOperation(int operation)
     }
 
-    class Booking {
-    }
+    class Booking {}
 
     class BookingRecords {
-        -{static} BookingRecords instance
+        -{static} instance: BookingRecords
+        -bookings: Map<Integer, Booking>
+        --
+        +BookingRecords getInstance()
         +void fetchAllBookings()
+        +void pruneBookingsWithoutInstructor()
         +void createBooking(Offering offering, Client client)
         +void cancelBooking(Offering offering, Client client)
         +void displayClientBookings(Client client)
@@ -48,13 +72,16 @@ package Main {
     }
 
     class City {
-        -int id
-        -string name
-        -string province
+        -id: int 
+        -name: String 
+        -province: String 
     }
 
     class CityRecords {
-        -{static} CityRecords instance
+        -{static} instance: CityRecords
+        -cities: Map<Integer, City>
+        --
+        +CityRecords getInstance()
         +void fetchAllCities()
         +City createCity(String name, String province)
         +void displayCities()
@@ -62,51 +89,80 @@ package Main {
     }
 
     class Location {
-        -int id
-        -string facility
-        -string roomName
-        -string type
+        -id: int 
+        -facility: String 
+        -roomName: String 
+        -type: String
     }
 
     class LocationRecords {
-        -{static} LocationRecords instance
+        -{static} instance: LocationRecords
+        -locations: Map<Integer, Location>
+        --
+        +LocationRecords getInstance()
         +void fetchAllLocations()
+        +void displayLocations()
         +void addLocation(Location location)
     }
 
     class Offering {
-        -int id
-        -string lesson
-        -int maxCapacity
-        -boolean isPrivate
+        -id: int
+        -lesson: String 
+        -maxCapacity: int 
+        /isPrivate: boolean 
         /currentCapacity
-        /isPrivate
     }
 
     class OfferingRecords {
-        -{static} OfferingRecords instance
+        -{static} instance: OfferingRecords
+        -offerings: Map<Integer, Offering>
+        --
+        +OfferingRecords getInstance()
         +void fetchAllOfferings()
         +void displayOfferings(Map<Integer, Offering> offerings)
+        +void createOffering(String lesson, int maxCapacity, Location location, 
+        Date startDate, Date endDate,
+            List<String> timeSlots, ScheduleRecords scheduleRecords)
+        + void updateOfferingInstructors(Instructor instructor, Offering offering)
         +void addOffering(Offering offering)
     }
 
     class Schedule {
-        -int id
-        -Date startDate
-        -Date endDate
+        -id: int 
+        -startDate: Date 
+        -endDate: Date 
+        --
+        +{static} void displaySchedule(Schedule schedule)
+        +{static} void printTimeSlotsTable(Map<Integer, TimeSlot> timeSlots)
     }
 
     class ScheduleRecords {
-        -{static} ScheduleRecords instance
+        -{static} instance: ScheduleRecords
+        -schedules: Map<Integer, Schedule>
+        --
+        +ScheduleRecords getInstance()
         +void fetchAllSchedules()
+        +int createSchedule(Date startDate, Date endDate, List<String> timeSlots)
+        +int[] createTimeSlots(List<String> timeSlots)
+        +void deleteSchedule(int scheduleId)
         +void addSchedule(Schedule schedule)
     }
 
     class TimeSlot {
-        -int id
-        -DayOfWeek day
-        -Time startTime
-        -Time endTime
+        -id: int 
+        -day: DayOfWeek
+        -startTime: Time 
+        -endTime: Time 
+    }
+
+    enum DayOfWeek {
+        SUNDAY
+        MONDAY
+        TUESDAY
+        WEDNESDAY
+        THURSDAY
+        FRIDAY
+        SATURDAY 
     }
 
     App "1" <-up- "1" Terminal
@@ -145,6 +201,11 @@ package Main {
 
     (Client, Offering) -- Booking
     Booking --* BookingRecords
+
+    ' Position DayOfWeek enum
+    DayOfWeek - Empty
+    Empty -- TimeSlot
+    hide Empty
 }
 
 @enduml

@@ -1,4 +1,4 @@
-@startuml
+@startuml Sequence Diagram for Creating an Offering
 title Sequence Diagram for Creating an Offering
 
 actor Admin

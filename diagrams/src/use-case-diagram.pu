@@ -2,7 +2,6 @@
 left to right direction
 ' skinparam linetype ortho
 
-
 actor Public
 actor Client
 actor Instructor

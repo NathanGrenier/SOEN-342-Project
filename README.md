@@ -2,6 +2,13 @@
 
 [![Test](https://github.com/NathanGrenier/SOEN-342-Project/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/NathanGrenier/SOEN-342-Project/actions/workflows/test.yaml)
 
+# 5 Minute Explanation Video
+
+<video width="640" height="480" controls>
+  <source src="/static/SOEN-342-Project.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## Team Members
 
 **Class Section:** II

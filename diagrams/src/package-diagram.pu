@@ -1,0 +1,91 @@
+@startuml Package Diagram
+hide empty members
+skinparam linetype ortho
+
+package System {
+    package Main {}
+    
+    package Config {
+        class DatabaseConfig {}
+        
+        class AdminRecords as "Users::AdminRecords"{}
+        class ClientRecords as "Users::ClientRecords"{}
+        class InstructorRecords as "Users::InstructorRecords"{}
+        class SpecializationRecords as "Users::SpecializationRecords"{}
+        class BookingRecords as "Main::BookingRecords"{}
+        class CityRecords as "Main::CityRecords"{}
+        class LocationRecords as "Main::LocationRecords"{}
+        class OfferingRecords as "Main::OfferingRecords"{}
+        class ScheduleRecords as "Main::ScheduleRecords"{}
+
+        AdminRecords -up-> DatabaseConfig
+        ClientRecords -up-> DatabaseConfig
+        InstructorRecords -up-> DatabaseConfig
+        SpecializationRecords -left-> DatabaseConfig
+        BookingRecords -right-> DatabaseConfig
+        CityRecords -up-> DatabaseConfig
+        LocationRecords -down-> DatabaseConfig
+        OfferingRecords -down-> DatabaseConfig
+        ScheduleRecords -down-> DatabaseConfig
+    }
+
+    package Services {
+        class AuthenticationService {}
+        class RegistrationService {}
+        class App as "Main::App"
+        
+        AuthenticationService <-left- App
+        RegistrationService <-right- App
+    }
+
+    package Users {
+        class App as "Main::App"
+
+        abstract User {
+            name
+            userName
+            password
+        }
+        class ClientRecords {}
+        class Client {
+            age
+        }
+        
+        class SpecializationRecords {}
+        class Specialization {
+            name
+        }
+        class InstructorRecords {}
+        class Instructor {
+            phoneNumber
+        }
+        class AdminRecords {}
+        class Admin {}
+        
+        App --> AdminRecords
+        App --> ClientRecords
+        App -> SpecializationRecords
+
+        User <|-right- Client
+        User <|-down- Instructor
+        User <|-left- Admin
+        
+        AdminRecords *- Admin
+
+        Client "0..1" -- "1" Client: guardianOf
+
+        ClientRecords *-left- Client
+
+        SpecializationRecords *- Specialization
+        
+        Instructor "1" -- "*" Specialization: specializesIn
+
+        InstructorRecords *- Instructor
+        InstructorRecords -left-> SpecializationRecords
+    }
+}
+
+Main .left.> Config
+Main .up.> Services
+Main .down.> Users
+@enduml

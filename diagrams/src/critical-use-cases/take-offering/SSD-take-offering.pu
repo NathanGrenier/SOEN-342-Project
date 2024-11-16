@@ -14,5 +14,4 @@ alt Success
 else Failure
     System --> Instructor: Error message
 end
-
 @enduml

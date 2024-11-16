@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class Terminal {
-    static App app = new App();
+    static App app = App.getInstance();
     static Scanner scanner = new Scanner(System.in);
     static boolean running = true;
 
@@ -146,7 +146,11 @@ public class Terminal {
                 break;
             case 3:
                 System.out.println("\n=== Your Bookings ===");
-                app.viewClientBookings();
+                try {
+                    app.viewClientBookings();
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
                 break;
             case 4:
                 app.viewClientBookings();
