@@ -1,4 +1,4 @@
-@startuml Sequence Diagram for Instructor Taking an Offering
+@startuml
 title Sequence Diagram for Instructor Taking an Offering
 
 actor Instructor
@@ -7,25 +7,39 @@ participant App
 participant OfferingRecords
 participant Offering
 participant InstructorRecords
+entity offering
+activate Terminal
 
 Instructor -> Terminal: viewOfferings()
-Terminal -> App: getAvailableOfferings()
-App -> OfferingRecords: getAvailableOfferings()
-OfferingRecords --> App: List of Offerings
-App --> Terminal: List of Offerings
+activate App
+Terminal -> App: instructorViewAllOfferings(Instructor)
+
+App -> App: filterOfferingsByInstructor()
+App -> OfferingRecords: displayOfferings(offerings)
+OfferingRecords --> App: List of Available Offerings
+App --> Terminal: List of Available Offerings
+deactivate App
 Terminal --> Instructor: Display available Offerings
 
-Instructor -> Terminal: acceptOffering(Offering)
-Terminal -> App: setOffering(Offering, Instructor)
-App -> Offering: setInstructor(Offering)
+Instructor -> Terminal: acceptOffering(offeringId)
+activate App
+Terminal -> App: acceptInstructorLesson(offeringId)
 
-alt Success
-    Offering --> App: Marked Offering as accepted
-    App --> Terminal: Confirmation message
-else Failure
-    Offering --> App: Availability error message
-    App --> Terminal: Error message
+App -> OfferingRecords: getOfferings().get(offeringId)
+alt Offering exists and is unassigned
+    OfferingRecords --> App: Offering instance o
+    App -> offering:setInstructor(Instructor)
+    Offering --> App: Offering marked as accepted
+    App -> OfferingRecords: updateOfferingInstructor(currentUser,selectedOffering)
+    OfferingRecords --> App: Update successful
+    App --> Terminal: "Offering successfully accepted."
+else Offering is invalid or already assigned
+    OfferingRecords --> App: null or error
+    App --> Terminal: "Error: Offering is unavailable or already assigned."
 end
+
+deactivate App
 Terminal --> Instructor: Display status message
 
+deactivate Terminal
 @enduml

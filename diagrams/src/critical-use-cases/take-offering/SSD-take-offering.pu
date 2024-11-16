@@ -3,11 +3,12 @@ title System Sequence Diagram: Instructor Taking an Offering
 
 actor Instructor
 participant System
+Instructor -> System: login(username,password)
+System --> Instructor: confirmation message
+Instructor -> System: instructorViewAllOfferings()
+System --> Instructor: Display list of available Offerings
 
-Instructor -> System: viewOfferings()
-System --> Instructor: List of available Offerings
-
-Instructor -> System: acceptOffering(Offering)
+Instructor -> System: acceptInstructorOffering(offeringId)
 alt Success
     System --> Instructor: Confirmation message
 else Failure

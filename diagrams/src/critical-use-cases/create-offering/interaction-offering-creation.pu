@@ -1,28 +1,56 @@
-@startuml Sequence Diagram for Creating an Offering
+@startuml
 title Sequence Diagram for Creating an Offering
 
 actor Admin
 participant Terminal
 participant App
-participant Offering
+participant LocationRecords
+participant ScheduleRecords
+participant OfferingRecords
+
+Admin -> Terminal: adminCreateOffering(lesson, locationId, timeSlots[], maxCapacity, startDate, endDate)
 activate Terminal
-Admin -> Terminal: createOffering(lesson, location, times[])
+Terminal -> App: adminCreateOffering(lesson, locationId, timeSlots[], maxCapacity, startDate, endDate)
 activate App
-Terminal -> App: createOffering(lesson, location, times[])
-App -> App: validate(lesson, location, times[])
 
-alt Success
-    App -> Schedule ** : create(TimeSlots[]) 
-    loop For each time in times[]
-        App -> TimeSlot ** : create(time) 
+App -> LocationRecords: getLocations()
+activate LocationRecords
+LocationRecords --> App: Locations Map
+deactivate LocationRecords
+
+App -> App: validate location (locationId)
+alt Location exists
+    App -> App: validateDates(startDate, endDate)
+    alt Dates valid
+        App -> App: validateTimeSlots(timeSlots)
+        alt Time slots valid
+            App -> OfferingRecords: createOffering(lesson, maxCapacity, location, startDate, endDate, timeSlots)
+            activate OfferingRecords
+            OfferingRecords -> OfferingRecords: checkForConflicts(locationId, timeSlots, startDate, endDate)
+            alt No conflicts
+                OfferingRecords --> App: Offering created
+                App -> ScheduleRecords: createSchedule(startDate, endDate, timeSlots)
+                activate ScheduleRecords
+                ScheduleRecords --> App: Schedule ID
+                deactivate ScheduleRecords
+
+                App --> Terminal: "Offering successfully created."
+            else Conflicts found
+                OfferingRecords --> App: Conflict detected
+                App --> Terminal: "Error: Time slot conflicts with existing offering."
+            end
+            deactivate OfferingRecords
+        else Invalid time slots
+            App --> Terminal: "Error: Invalid time slots."
+        end
+    else Invalid dates
+        App --> Terminal: "Error: Invalid dates."
     end
-    App -> Lesson ** : create(lesson)
-    App -> Offering ** : create(Location, Lesson, Schedule)
-else Error
-    App --> Terminal: Validation error message
+else Location not found
+    App --> Terminal: "Error: Invalid location."
 end
-deactivate App
 
+deactivate App
 Terminal --> Admin: Status message
 deactivate Terminal
 @enduml
