@@ -1,78 +1,150 @@
+@startuml
+title Package Diagram: Main with Additional Classes
 
-@startuml Class Diagram
+package Main {
+    class InstructorRecords as "Users::InstructorRecords"  {}
+    class Client as "Users::Client" {}
+    class Instructor as "Users::Instructor" {}
+    class App {
+        +void login(String username, String password)
+        +void logout()
+        +void registerClient(String name, String username, 
+        String password, int age, String guardianUserName)
+        +void registerInstructor(String name, String username, String password, 
+        String phone,String[] specializationNames,String[] cityNames)
+        +void displayUsers(String userType)
+        +void displaySpecializations()
+        +void displayCities()
+        +void clientViewPublicOfferings()
+        +void createBooking(int offeringId)
+        +void viewClientBookings()
+        +void viewClientBookings(String username)
+        +void cancelBooking(int offeringId)
+        +void updateGuardian(String username)
+        +void displayCurrentGuardian()
+        +void deleteUser(String userType, String username)
+        +void viewInstructorAvailableOfferings()
+    }
 
-class User {
-    + name: String
-    + phone: String
-    + userID: Integer
+    class Terminal {
+        +void displayMenu(String userType)
+        +void handleClientOperation(int operation)
+        +void handleInstructorOperation(int operation)
+        +void handleAdminOperation(int operation)
+        +void handlePublicOperation(int operation)
+    }
+
+    class Booking {
+    }
+
+    class BookingRecords {
+        -{static} BookingRecords instance
+        +void fetchAllBookings()
+        +void createBooking(Offering offering, Client client)
+        +void cancelBooking(Offering offering, Client client)
+        +void displayClientBookings(Client client)
+        +void clientDisplayPublicOfferings(Client client)
+        +void addBooking(Booking booking)
+    }
+
+    class City {
+        -int id
+        -string name
+        -string province
+    }
+
+    class CityRecords {
+        -{static} CityRecords instance
+        +void fetchAllCities()
+        +City createCity(String name, String province)
+        +void displayCities()
+        +void addCity(City city)
+    }
+
+    class Location {
+        -int id
+        -string facility
+        -string roomName
+        -string type
+    }
+
+    class LocationRecords {
+        -{static} LocationRecords instance
+        +void fetchAllLocations()
+        +void addLocation(Location location)
+    }
+
+    class Offering {
+        -int id
+        -string lesson
+        -int maxCapacity
+        -boolean isPrivate
+        /currentCapacity
+        /isPrivate
+    }
+
+    class OfferingRecords {
+        -{static} OfferingRecords instance
+        +void fetchAllOfferings()
+        +void displayOfferings(Map<Integer, Offering> offerings)
+        +void addOffering(Offering offering)
+    }
+
+    class Schedule {
+        -int id
+        -Date startDate
+        -Date endDate
+    }
+
+    class ScheduleRecords {
+        -{static} ScheduleRecords instance
+        +void fetchAllSchedules()
+        +void addSchedule(Schedule schedule)
+    }
+
+    class TimeSlot {
+        -int id
+        -DayOfWeek day
+        -Time startTime
+        -Time endTime
+    }
+
+    App "1" <-up- "1" Terminal
+    App --> OfferingRecords
+    App --> BookingRecords
+    App -> InstructorRecords
+    App -> CityRecords
+    App -> LocationRecords
+    App --> ScheduleRecords
+
+    InstructorRecords -> CityRecords
+
+    City -* CityRecords
+
+    Location "*" -up-> "1" City: in
+
+    LocationRecords --> CityRecords
+    LocationRecords *-up- Location
+    LocationRecords <-- OfferingRecords
+
+    Schedule *- TimeSlot: has
+
+    ScheduleRecords *-- Schedule
+    ScheduleRecords <-- OfferingRecords
+
+    Offering --* OfferingRecords
+    Offering "1" --> "1" Schedule: at
+    Offering "1" --> "1" Location: in
+
+    OfferingRecords -> InstructorRecords
+
+    Instructor "1" -- "*" City: availableIn
+    Instructor "0..1" <-- "*" Offering: taughtBy
+
+    Client "*" -- "*" Offering
+
+    (Client, Offering) -- Booking
+    Booking --* BookingRecords
 }
-class Location {
-    + name: String
-    + city: String
-    + address: String
-}
-
-class Schedule {
-    + week: String
-    + day: String
-    + addSlot(TimeSlot): void
-}
-
-class TimeSlot {
-    + startTime: Time
-    + endTime: Time
-    + isBooked: Boolean
-}
-
-class Lesson {
-    + type: String
-    + isGroup: Boolean
-    + duration: Time
-}
-
-class Instructor {
-    + specialization: String
-    + availableCities: List<String>
-    + addCity(String): void
-}
-
-class Offering {
-    + isPublic: Boolean
-}
-
-class Client {
-    + register(): void
-    + makeBooking(Offering): void
-    + cancelBooking(Booking): void
-}
-
-class Booking {
-    + date: Date
-    + isConfirmed: Boolean
-}
-
-class Admin {
-    + manageOfferings(): void
-    + deleteAccount(): void
-    + createOffering(): void
-}
-
-class Guardian {
-
-}
-
-Schedule *-- TimeSlot
-Offering "*" -- "1" Lesson : offers
-Offering "*" -- "1" Location : offered at
-Offering "1" -- "1" Schedule : scheduled at
-Offering "*" -- "1" Instructor : taught by
-Client "1" -- "*" Booking : makes
-Booking "1" -- "1" Offering : for
-Client "1" -- "0..1" Guardian : has
-User <|-- Guardian
-User <|-- Client
-User <|-- Instructor
-User <|-- Admin
-Admin "1" -- "0..*" Offering: manages
 
 @enduml
